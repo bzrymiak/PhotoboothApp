@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { firebase_auth } from "./src/firebaseConfig";
+import { PhotoProvider } from "./src/context/PhotoContext";
 
 // screens
 import SignInScreen from "./src/screens/SignInScreen";
@@ -32,24 +33,27 @@ export default function App() {
 
   // ROOT NAVIGATION CONTAINER
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="SignIn">
-        {/* conditional rendering (The Auth Flow):
-          Check if the 'user' state exists.
-        */}
-        {user ? (
-          // IF LOGGED IN: show the entire app.
-          // we hide the header here because the ProtectedLayout has its own headers.
-          <Stack.Screen
-            name="ProtectedArea"
-            component={ProtectedAreaScreen}
-            options={{ headerShown: false }}
-          />
-        ) : (
-          // IF NOT LOGGED IN: show the Sign In Screen.
-          <Stack.Screen name="SignIn" component={SignInScreen} />
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <PhotoProvider>
+      //wraps all screens so they can all access photos
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="SignIn">
+          {/* conditional rendering (The Auth Flow):
+            Check if the 'user' state exists.
+          */}
+          {user ? (
+            // IF LOGGED IN: show the entire app.
+            // we hide the header here because the ProtectedLayout has its own headers.
+            <Stack.Screen
+              name="ProtectedArea"
+              component={ProtectedAreaScreen}
+              options={{ headerShown: false }}
+            />
+          ) : (
+            // IF NOT LOGGED IN: show the Sign In Screen.
+            <Stack.Screen name="SignIn" component={SignInScreen} />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </PhotoProvider>
   );
 }
