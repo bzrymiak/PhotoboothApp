@@ -1,6 +1,13 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useRef, useState } from "react";
-import { StyleSheet, Text, Button, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  Image,
+  Button,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { usePhotos } from "../context/PhotoContext";
 
 export default function CameraScreen() {
@@ -70,25 +77,33 @@ export default function CameraScreen() {
       />
 
       {/* Success toast */}
-      {showSuccessText && (
+      {/* {showSuccessText && (
         <View style={styles.toastContainer}>
           <Text style={styles.toastText}>Photo Saved!</Text>
         </View>
-      )}
+      )} */}
 
       {/* Bottom controls */}
       <View style={styles.cameraOverlay}>
         <View style={styles.sideControl} />
+
         <TouchableOpacity
           style={[styles.snapButton, !isCameraReady && { opacity: 0.5 }]}
           onPress={takePicture}
           disabled={!isCameraReady}
         >
-          <Text style={styles.camButtonText}>Snap</Text>
+          {/* <Text style={styles.camButtonText}>Snap</Text> */}
         </TouchableOpacity>
+
         <View style={styles.sideControl}>
-          <TouchableOpacity style={styles.camButton} onPress={toggleCamera}>
-            <Text style={styles.camButtonText}>Flip</Text>
+          <TouchableOpacity style={styles.flipButton} onPress={toggleCamera}>
+            {/* <Text style={styles.flipButtonText}>Flip</Text> */}
+            <Image
+              style={styles.flipButtonImg}
+              source={require("../../assets/flipButtonIcon.png")}
+            />
+            {/*CHANGE TO FLIP ICON*/}
+            LATER
           </TouchableOpacity>
         </View>
       </View>
@@ -96,4 +111,55 @@ export default function CameraScreen() {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  screenContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+
+  cameraOverlay: {
+    position: "absolute",
+    bottom: 0, //sticks to bottom of parent container
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 30,
+    paddingBottom: 30,
+    zIndex: 10,
+  },
+
+  // the snap and flip button
+  sideControl: {
+    width: 60,
+    alignItems: "center",
+  },
+
+  //making size and circle for taking a photo button
+  snapButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35, //make a circle
+    backgroundColor: "rbga(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 4,
+    borderColor: "white",
+  },
+
+  //styling for flip camera button
+  flipButton: {
+    backgroundColor: "rgba(255,255,255,0.5)",
+    paddingVertical: "20%",
+    paddingHorizontal: "20%",
+    borderRadius: 35,
+  },
+
+  flipButtonImg: {
+    tintColorolor: "white",
+    width: 28,
+    height: 28,
+  },
+});
