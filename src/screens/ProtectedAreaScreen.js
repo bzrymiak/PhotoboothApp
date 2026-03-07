@@ -5,10 +5,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { firebase_auth } from "./src/firebaseConfig";
 
 //importing screens
-import ProtectedAreaScreen from "./ProtectedAreaScreen";
 import SignInScreen from "./SignInScreen";
 import CameraScreen from "./CameraScreen";
 import GalleryScreen from "./GalleryScreen";
