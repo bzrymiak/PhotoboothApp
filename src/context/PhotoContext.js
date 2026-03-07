@@ -1,4 +1,6 @@
 //HOLD PHOTOS ARRAY AND MANAGE PHOTO ADDING/DELETING FUNCTIONS
+// can edit, this is just taken from class
+
 import { createContext, useContext, useState } from "react";
 
 const PhotoContext = createContext();
