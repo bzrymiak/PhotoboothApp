@@ -1,4 +1,4 @@
-// RENDER TABS AND HOMESCREEN CONTENT
+// RENDER TABS AND PROTECTEDSCREEN CONTENT
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet } from "react-native";
