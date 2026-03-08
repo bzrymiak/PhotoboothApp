@@ -103,7 +103,7 @@ export default function CameraScreen() {
               source={require("../../assets/flipButtonIcon.png")}
             />
             {/*CHANGE TO FLIP ICON*/}
-            LATER
+            {/* LATER */}
           </TouchableOpacity>
         </View>
       </View>
