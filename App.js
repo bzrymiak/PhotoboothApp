@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { firebase_auth } from "./src/firebaseConfig";
 import ProtectedAreaScreen from "./src/screens/ProtectedAreaScreen";
 import SignInScreen from "./src/screens/SignInScreen";
+import { GoogleAuthProvider } from "firebase/auth";
 
 export default function App() {
   // state to hold the current user object.
@@ -17,6 +18,8 @@ export default function App() {
 
   // 'ProtectedStack' handles navigation strictly *within* the authenticated area.
   const ProtectedStack = createNativeStackNavigator();
+
+  const provider = new GoogleAuthProvider();
 
   // layout component for authenticated users.
   // this groups all screens that should only be visible after logging in.
