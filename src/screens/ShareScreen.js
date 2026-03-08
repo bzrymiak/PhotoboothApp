@@ -1,9 +1,9 @@
 import { View, Text } from "react-native";
 
-export default function PhotostripScreen() {
+export default function ShareScreen() {
   return (
     <View>
-      <Text>Photostrip</Text>
+      <Text>Camera</Text>
     </View>
   );
 }

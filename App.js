@@ -1,14 +1,20 @@
+// APP.JS COVERS AUTHENTICATION
+
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { firebase_auth } from "./src/firebaseConfig";
-import ProtectedAreaScreen from "./src/screens/ProtectedAreaScreen";
+import { PhotoProvider } from "./src/context/PhotoContext";
+
+// screens
 import SignInScreen from "./src/screens/SignInScreen";
-import { GoogleAuthProvider } from "firebase/auth";
+import ProtectedAreaScreen from "./src/screens/ProtectedAreaScreen";
+
+// root navigator handles authentication flow
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  // state to hold the current user object.
   // initially 'null' (assumes no user is logged in).
   const [user, setUser] = useState(null);
 
@@ -18,8 +24,6 @@ export default function App() {
 
   // 'ProtectedStack' handles navigation strictly *within* the authenticated area.
   const ProtectedStack = createNativeStackNavigator();
-
-  const provider = new GoogleAuthProvider();
 
   // layout component for authenticated users.
   // this groups all screens that should only be visible after logging in.
@@ -36,7 +40,6 @@ export default function App() {
   }
 
   // useEffect hook to listen for Firebase authentication state changes.
-  // This runs once when the component mounts.
   useEffect(() => {
     // onAuthStateChanged sets up a listener.
     // it triggers whenever the user logs in, logs out, or the token refreshes.
@@ -49,25 +52,29 @@ export default function App() {
     });
   }, []);
 
+  // ROOT NAVIGATION CONTAINER
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="SignIn">
-        {/* conditional rendering (The Auth Flow):
-          Check if the 'user' state exists.
-        */}
-        {user ? (
-          // IF LOGGED IN: render the Protected Layout.
-          // we hide the header here because the ProtectedLayout has its own headers.
-          <Stack.Screen
-            name="ProtectedArea"
-            component={ProtectedLayout}
-            options={{ headerShown: false }}
-          />
-        ) : (
-          // IF NOT LOGGED IN: render the Sign In Screen.
-          <Stack.Screen name="SignIn" component={SignInScreen} />
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <PhotoProvider>
+      {/* wraps all screens so they can all access photos */}
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="SignIn">
+          {/* conditional rendering (The Auth Flow):
+            Check if the 'user' state exists.
+          */}
+          {user ? (
+            // IF LOGGED IN: show the entire app.
+            // we hide the header here because the ProtectedLayout has its own headers.
+            <Stack.Screen
+              name="ProtectedArea"
+              component={ProtectedAreaScreen}
+              options={{ headerShown: false }}
+            />
+          ) : (
+            // IF NOT LOGGED IN: show the Sign In Screen.
+            <Stack.Screen name="SignIn" component={SignInScreen} />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </PhotoProvider>
   );
 }

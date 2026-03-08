@@ -1,9 +1,9 @@
 import { View, Text } from "react-native";
 
-export default function PhotostripScreen() {
+export default function EditScreen() {
   return (
     <View>
-      <Text>Photostrip</Text>
+      <Text>Edit Photostrip</Text>
     </View>
   );
 }

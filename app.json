@@ -19,7 +19,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "googleServicesFile": "./GoogleService-Info.plist",
+      // "googleServicesFile": "./GoogleService-Info.plist",
       "bundleIdentifier": "com.frb.photobooth"
     },
     "android": {
@@ -28,7 +28,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "googleServicesFile": "./google-services.json",
+      // "googleServicesFile": "./google-services.json",
       "package": "com.frb.photobooth"
     },
     "web": {

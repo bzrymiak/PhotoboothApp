@@ -6,9 +6,6 @@ import {
 import { useState, useEffect } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { firebase_auth } from "../firebaseConfig";
-// import { initializeApp } from "firebase/app";
-// import { initializeAuth, getReactNativePersistence } from "firebase/auth";
-// // import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
@@ -31,8 +28,6 @@ export default function SignInScreen() {
     // androidClientId: " ",
     webClientId:
       "https://495405279023-t3c7fr82dqk3c6asaif6j52jtg0fro8u.apps.googleusercontent.com",
-
-    // "YOUR_WEB_CLIENT_ID", // from Firebase project settings
   });
 
   // track response for google sign in
