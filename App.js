@@ -71,7 +71,11 @@ export default function App() {
             />
           ) : (
             // IF NOT LOGGED IN: show the Sign In Screen.
-            <Stack.Screen name="SignIn" component={SignInScreen} />
+            <Stack.Screen
+              name="SignIn"
+              component={SignInScreen}
+              options={{ headerShown: false }}
+            />
           )}
         </Stack.Navigator>
       </NavigationContainer>

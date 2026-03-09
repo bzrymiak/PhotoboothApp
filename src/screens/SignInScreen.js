@@ -4,7 +4,14 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useState, useEffect } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  Pressable,
+  Image,
+} from "react-native";
 import { firebase_auth } from "../firebaseConfig";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
@@ -21,6 +28,7 @@ export default function SignInScreen() {
   const auth = firebase_auth;
 
   // connect to Google API
+  // should turn these into variables
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId:
       "170069746600-fpjr73ati0489boiodpuio97iv25h4ap.apps.googleusercontent.com",
@@ -105,7 +113,7 @@ export default function SignInScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Welcome</Text>
+      <Text style={styles.header}>Sign Up or Log In</Text>
 
       {/* Email Input */}
       <TextInput
@@ -127,20 +135,45 @@ export default function SignInScreen() {
       />
 
       {/* Action Buttons */}
-      <View style={styles.buttonContainer}>
-        <Button title="Sign Up" onPress={handleSignUp} />
+      <Pressable
+        onPress={handleSignUp}
+        style={({ pressed }) => [
+          { backgroundColor: pressed ? "#292929" : "#3B3B3B" },
+          styles.buttonContainer,
+        ]}
+      >
+        <Text style={styles.buttonText}>Sign Up</Text>
+      </Pressable>
+
+      <Pressable
+        onPress={handleSignIn}
+        style={({ pressed }) => [
+          { backgroundColor: pressed ? "#292929" : "#3B3B3B" },
+          styles.buttonContainer,
+        ]}
+      >
+        <Text style={styles.buttonText}>Sign In</Text>
+      </Pressable>
+
+      <View style={styles.line}>
+        <Text style={styles.smallText}>or</Text>
       </View>
 
-      <View style={styles.buttonContainer}>
-        <Button title="Sign In" onPress={handleSignIn} />
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Sign In with Google"
-          onPress={() => handleGoogleSignIn()}
-        />
-      </View>
+      <Pressable
+        onPress={() => handleGoogleSignIn()}
+        style={({ pressed }) => [
+          { backgroundColor: pressed ? "#9A9A9A" : "#D9D9D9" },
+          styles.buttonContainer,
+        ]}
+      >
+        <View style={styles.inlineButton}>
+          <Image
+            style={styles.googleIcon}
+            source={require("../../assets/googleIcon.png")}
+          />
+          <Text style={styles.googleText}>Continue with Google</Text>
+        </View>
+      </Pressable>
     </View>
   );
 }
@@ -150,34 +183,70 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 16,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "white",
   },
   header: {
     fontSize: 24,
     marginBottom: 24,
-    textAlign: "center",
+    textAlign: "left",
+    fontWeight: "bold",
   },
   input: {
     height: 40,
     borderColor: "#ccc",
     borderWidth: 1,
     marginBottom: 12,
-    paddingHorizontal: 8,
+    padding: 16,
     borderRadius: 8,
     backgroundColor: "white",
   },
   buttonContainer: {
-    padding: 10,
-    borderColor: "#c5c5c5",
-    borderWidth: 1,
+    padding: 16,
     margin: 10,
-    width: 200,
+    marginBottom: 0,
+    width: "100%",
     alignSelf: "center",
-    borderRadius: 16,
+    textAlign: "center",
+    borderRadius: 8,
+  },
+  buttonText: {
+    textAlign: "center",
+    fontWeight: 700,
+    fontSize: 16,
+    color: "white",
+  },
+  googleText: {
+    textAlign: "center",
+    justifyContent: "center",
+    fontWeight: 500,
   },
   footer: {
     marginTop: 20,
     textAlign: "center",
     color: "#888",
+  },
+  line: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginTop: 50,
+    marginBottom: 10,
+    color: "#9A9A9A",
+  },
+  smallText: {
+    textAlign: "center",
+    alignSelf: "center",
+    marginBottom: -8,
+    color: "#9A9A9A",
+    backgroundColor: "white",
+    width: 40,
+  },
+  googleIcon: {
+    width: 28,
+    height: 28,
+  },
+  inlineButton: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
   },
 });
