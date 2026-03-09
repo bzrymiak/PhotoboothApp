@@ -34,7 +34,7 @@ export default function App() {
   // ROOT NAVIGATION CONTAINER
   return (
     <PhotoProvider>
-      //wraps all screens so they can all access photos
+      {/* wraps all screens so they can all access photos */}
       <NavigationContainer>
         <Stack.Navigator initialRouteName="SignIn">
           {/* conditional rendering (The Auth Flow):
