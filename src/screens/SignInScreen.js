@@ -196,9 +196,8 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderWidth: 1,
     marginBottom: 12,
-    padding: 16,
+    paddingLeft: 16,
     borderRadius: 8,
-    backgroundColor: "white",
   },
   buttonContainer: {
     padding: 16,
