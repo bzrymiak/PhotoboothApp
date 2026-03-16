@@ -3,7 +3,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import CameraScreen from "../screens/CameraScreen";
 import EditScreen from "../screens/EditScreen";
-import ShareScreen from "../screens/ShareScreen";
+import PhotostripScreen from "../screens/PhotostripScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -12,7 +12,7 @@ export default function CameraEditStack() {
     <Stack.Navigator>
       <Stack.Screen name="Camera" component={CameraScreen} />
       <Stack.Screen name="Edit" component={EditScreen} />
-      <Stack.Screen name="Share" component={ShareScreen} />
+      <Stack.Screen name="Photostrip" component={PhotostripScreen} />
     </Stack.Navigator>
   );
 }

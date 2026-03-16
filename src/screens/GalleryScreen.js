@@ -1,4 +1,12 @@
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
 import { usePhotos } from "../context/PhotoContext";
 
 const NUM_COLUMNS = 3;
@@ -12,7 +20,9 @@ export default function GalleryScreen() {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>No photos yet.</Text>
-        <Text style={styles.emptySubText}>Take a photo and save it to the app!</Text>
+        <Text style={styles.emptySubText}>
+          Take a photo and save it to the app!
+        </Text>
       </View>
     );
   }

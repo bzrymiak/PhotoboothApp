@@ -14,12 +14,14 @@ import { usePhotos } from "../context/PhotoContext";
 export default function CameraScreen({ navigation }) {
   const [facing, setFacing] = useState("back");
   const [permission, requestPermission] = useCameraPermissions();
-  const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions();
+  const [mediaPermission, requestMediaPermission] =
+    MediaLibrary.usePermissions();
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [previewPhoto, setPreviewPhoto] = useState(null); // Holds the taken photo
 
   const cameraRef = useRef(null);
   const { addPhoto } = usePhotos();
+  const { photos } = usePhotos();
 
   if (!permission) return <View />;
   if (!permission.granted) {
@@ -55,6 +57,8 @@ export default function CameraScreen({ navigation }) {
     const base64Image = `data:image/jpg;base64,${previewPhoto.base64}`;
     addPhoto(base64Image);
     setPreviewPhoto(null); // go back to camera after saving to app
+    // when 3 photos (a full strip) has been taken, navigate to the photostrip
+    if (photos.length + 1 === 3) navigation.navigate("Photostrip"); 
   }
 
   // Save to device camera roll
@@ -67,7 +71,7 @@ export default function CameraScreen({ navigation }) {
       }
     }
     await MediaLibrary.saveToLibraryAsync(previewPhoto.uri);
-    setPreviewPhoto(null); 
+    setPreviewPhoto(null);
   }
 
   // Discard photo and go back to camera
@@ -95,7 +99,10 @@ export default function CameraScreen({ navigation }) {
             <Text style={styles.actionButtonText}>Save to App</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.actionButton, styles.localButton]} onPress={saveLocally}>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.localButton]}
+            onPress={saveLocally}
+          >
             <Text style={styles.actionButtonText}>Save to Phone</Text>
           </TouchableOpacity>
         </View>

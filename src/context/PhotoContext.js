@@ -7,6 +7,7 @@ const PhotoContext = createContext();
 
 export function PhotoProvider({ children }) {
   const [photos, setPhotos] = useState([]);
+  // const [strips, setStrips] = useState([]);
 
   const addPhoto = (uri) => {
     setPhotos((prev) => [uri, ...prev]);
