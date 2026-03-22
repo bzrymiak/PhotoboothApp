@@ -15,7 +15,8 @@
     },
     "plugins": [
       "@react-native-google-signin/google-signin",
-      "expo-web-browser"
+      "expo-web-browser",
+      "@react-native-firebase/auth"
     ],
     "ios": {
       "supportsTablet": true,

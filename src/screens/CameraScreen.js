@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { usePhotos } from "../context/PhotoContext";
+// import { usePhotos } from "../context/PhotoContext";
 
 export default function CameraScreen({ navigation }) {
   const [facing, setFacing] = useState("back");
@@ -18,10 +18,11 @@ export default function CameraScreen({ navigation }) {
     MediaLibrary.usePermissions();
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [previewPhoto, setPreviewPhoto] = useState(null); // Holds the taken photo
+  const [photos, setPhotos] = useState([]); // holds up to 3 base64 images locally
 
   const cameraRef = useRef(null);
-  const { addPhoto } = usePhotos();
-  const { photos } = usePhotos();
+  // const { addPhoto } = usePhotos();
+  // const { photos } = usePhotos();
 
   if (!permission) return <View />;
   if (!permission.granted) {
@@ -53,13 +54,45 @@ export default function CameraScreen({ navigation }) {
     }
   }
 
+  // const takePhoto = async () => {
+  //   if (cameraRef.current) {
+  //     const result = await cameraRef.current.takePictureAsync({ quality: 0.7 });
+  //     setPhoto(result.uri);
+  //   }
+  // };
+
+  // function saveToApp() {
+  //   const base64Image = `data:image/jpg;base64,${previewPhoto.base64}`;
+  //   addPhoto(base64Image);
+  //   setPreviewPhoto(null);
+  //   if (photos.length + 1 === 3) navigation.navigate("Photostrip");
+  // }
+
   function saveToApp() {
     const base64Image = `data:image/jpg;base64,${previewPhoto.base64}`;
-    addPhoto(base64Image);
-    setPreviewPhoto(null); // go back to camera after saving to app
-    // when 3 photos (a full strip) has been taken, navigate to the photostrip
-    if (photos.length + 1 === 3) navigation.navigate("Photostrip"); 
+    const updatedPhotos = [...photos, base64Image];
+    setPhotos(updatedPhotos);
+    setPreviewPhoto(null);
+
+    // Once we have 3 photos, pass them to PhotostripScreen via nav params
+    if (updatedPhotos.length === 3) {
+      navigation.navigate("Photostrip", { photos: updatedPhotos });
+      setPhotos([]); // reset for next strip
+    }
   }
+
+  // Save to device camera roll
+  // async function saveLocally() {
+  //   if (!mediaPermission?.granted) {
+  //     const { granted } = await requestMediaPermission();
+  //     if (!granted) {
+  //       console.log("Media library permission not granted");
+  //       return;
+  //     }
+  //   }
+  //   await MediaLibrary.saveToLibraryAsync(previewPhoto.uri);
+  //   setPreviewPhoto(null);
+  // }
 
   // Save to device camera roll
   async function saveLocally() {
@@ -71,6 +104,10 @@ export default function CameraScreen({ navigation }) {
       }
     }
     await MediaLibrary.saveToLibraryAsync(previewPhoto.uri);
+    setPreviewPhoto(null);
+  }
+
+  function discardPhoto() {
     setPreviewPhoto(null);
   }
 
