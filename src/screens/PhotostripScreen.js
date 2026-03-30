@@ -29,11 +29,6 @@ export default function PhotostripScreen({ route, navigation }) {
   const snapshotRef = useRef();
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
-  // const { photos, deletePhoto } = usePhotos();
-  // const snapshotRef = useRef();
-  // const [snapshotImg, setSnapshotImg] = useState();
-  // const [mediaPermission, requestMediaPermission] =
-  //   MediaLibrary.usePermissions();
 
   const snapshot = async () => {
     if (saving || saved) return;
@@ -82,66 +77,12 @@ export default function PhotostripScreen({ route, navigation }) {
     console.log("Photostrip saved to Firebase with ID:", docRef.id);
   }
 
-  // try {
-  //   const filename = `photostrips/${Date.now()}.png`;
-  //   const reference = storage().ref(filename);
-  //   await reference.putFile(photoPath);
-
-  //   const downloadURL = await reference.getDownloadURL();
-
-  //   await firestore().collection("photostrips").add({
-  //     url: downloadURL,
-  //     createdAt: firestore.FieldValue.serverTimestamp(),
-  //   });
-
-  //   console.log("Photostrip saved to Firebase:", downloadURL);
-  // } catch (error) {
-  //   console.error("Firebase upload error:", error);
-  // }
-
-  // Save to device camera roll
-  // async function saveLocally(photo) {
-  //   if (!mediaPermission?.granted) {
-  //     const { granted } = await requestMediaPermission();
-  //     if (!granted) {
-  //       console.log("Media library permission not granted");
-  //       return;
-  //     }
-  //   }
-  //   await MediaLibrary.saveToLibraryAsync(photo); // takes the photo path straight from captureRef
-  // }
-
   const discard = () => {
     navigation.goBack(); // go back to camera
   };
 
-  // if (photos.length < 3) {
-  //   return (
-  //     <View style={styles.emptyContainer}>
-  //       <Text style={styles.emptyText}>No photos yet.</Text>
-  //       <Text style={styles.emptySubText}>
-  //         Take more photos to create a photostrip!
-  //       </Text>
-  //     </View>
-  //   );
-  // }
-
   return (
     <View style={styles.container}>
-      {/* debugging snapshot code */}
-      {/* {snapshotImg ? <Text>Snapshot taken</Text> : <Text>No snapshot</Text>}
-      {snapshotImg ? (
-        <View style={styles.snapshotContainer}>
-          <Image
-            resizeMode="contain"
-            style={styles.snapshotImg}
-            source={{ uri: snapshotImg }}
-          />
-        </View>
-      ) : (
-        <View />
-      )} */}
-
       <View ref={snapshotRef} collapsable={false}>
         <FlatList
           data={photos}
