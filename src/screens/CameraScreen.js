@@ -54,20 +54,6 @@ export default function CameraScreen({ navigation }) {
     }
   }
 
-  // const takePhoto = async () => {
-  //   if (cameraRef.current) {
-  //     const result = await cameraRef.current.takePictureAsync({ quality: 0.7 });
-  //     setPhoto(result.uri);
-  //   }
-  // };
-
-  // function saveToApp() {
-  //   const base64Image = `data:image/jpg;base64,${previewPhoto.base64}`;
-  //   addPhoto(base64Image);
-  //   setPreviewPhoto(null);
-  //   if (photos.length + 1 === 3) navigation.navigate("Photostrip");
-  // }
-
   function saveToApp() {
     const base64Image = `data:image/jpg;base64,${previewPhoto.base64}`;
     const updatedPhotos = [...photos, base64Image];
@@ -76,23 +62,10 @@ export default function CameraScreen({ navigation }) {
 
     // Once we have 3 photos, pass them to PhotostripScreen via nav params
     if (updatedPhotos.length === 3) {
-      navigation.navigate("Photostrip", { photos: updatedPhotos });
+      navigation.navigate("Edit", { photos: updatedPhotos }); //navigate to edit screen
       setPhotos([]); // reset for next strip
     }
   }
-
-  // Save to device camera roll
-  // async function saveLocally() {
-  //   if (!mediaPermission?.granted) {
-  //     const { granted } = await requestMediaPermission();
-  //     if (!granted) {
-  //       console.log("Media library permission not granted");
-  //       return;
-  //     }
-  //   }
-  //   await MediaLibrary.saveToLibraryAsync(previewPhoto.uri);
-  //   setPreviewPhoto(null);
-  // }
 
   // Save to device camera roll
   async function saveLocally() {

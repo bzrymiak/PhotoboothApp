@@ -21,11 +21,11 @@ import { onAuthStateChanged } from "firebase/auth";
 
 const NUM_COLUMNS = 1;
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const PHOTO_HEIGHT = SCREEN_WIDTH / 2.1;
-const PHOTO_WIDTH = PHOTO_HEIGHT / 1.1;
+const PHOTO_HEIGHT = SCREEN_WIDTH / 2.0; // match EditScreen
+const PHOTO_WIDTH = PHOTO_HEIGHT / 1.4; // match EditScreen
 
 export default function PhotostripScreen({ route, navigation }) {
-  const { photos } = route.params; //3 base64 images passed from CameraScreen
+  const { photos, caption } = route.params; //images and caption passed from CameraScreen
   const snapshotRef = useRef();
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -83,12 +83,14 @@ export default function PhotostripScreen({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <View ref={snapshotRef} collapsable={false}>
+      <View ref={snapshotRef} collapsable={false} style={styles.stripContainer}>
         <FlatList
           data={photos}
           style={styles.shadow}
           keyExtractor={(_, index) => index.toString()}
           numColumns={NUM_COLUMNS}
+          scrollEnabled={false}
+          contentContainerStyle={{ gap: 0, padding: 0 }}
           renderItem={({ item, index }) => (
             <View style={styles.photoWrapper}>
               <Image
@@ -99,13 +101,14 @@ export default function PhotostripScreen({ route, navigation }) {
             </View>
           )}
         />
+        {caption ? <Text style={styles.captionText}>{caption}</Text> : null}
       </View>
 
       {/* Bottom action buttons */}
       <View style={styles.previewActions}>
-        <TouchableOpacity style={styles.actionButton} onPress={discard}>
-          <Text style={styles.actionButtonText}>Discard</Text>
-        </TouchableOpacity>
+        {/* <TouchableOpacity style={styles.actionButton} onPress={discard}>
+          <Text style={styles.actionButtonText}>Delete</Text>
+        </TouchableOpacity> */}
 
         <TouchableOpacity
           style={[styles.actionButton, styles.localButton]}
@@ -122,37 +125,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    paddingTop: 20,
-    paddingInline: 40,
-  },
-
-  emptyContainer: {
-    flex: 1,
-    backgroundColor: "white",
-    justifyContent: "center",
     alignItems: "center",
+    paddingTop: 24,
   },
 
-  emptyText: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-
-  emptySubText: {
-    color: "gray",
-    fontSize: 14,
+  stripContainer: {
+    backgroundColor: "white",
+    shadowColor: "grey",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    gap: 2,
+    marginBottom: 100,
+    padding: 0,
   },
 
   photoWrapper: {
     width: PHOTO_HEIGHT,
     height: PHOTO_WIDTH,
-    position: "relative",
     alignSelf: "center",
-    margin: 5,
-    outlineWidth: 15,
-    outlineColor: "white",
+    margin: 12,
+    marginBottom: 2,
   },
 
   photo: {
@@ -160,26 +153,34 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 
-  shadow: {
-    paddingTop: 10,
-    paddingBottom: 20,
-    shadowColor: "grey",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 6,
+  captionText: {
+    fontSize: 14,
+    color: "black",
+    textAlign: "center",
+    paddingBottom: 32,
+  },
+
+  photo: {
+    width: "100%",
+    height: "100%",
   },
 
   actionButton: {
     flex: 1,
-    backgroundColor: "rgba(186, 186, 186, 0.4)",
-    paddingVertical: 14,
+    backgroundColor: "black",
+    paddingVertical: 12,
     borderRadius: 30,
-    width: 10,
     alignItems: "center",
   },
 
+  actionButtonText: {
+    color: "white",
+    fontWeight: 600,
+    fontSize: 16,
+  },
+
   localButton: {
-    backgroundColor: "rgba(186, 186, 186, 0.9)",
+    backgroundColor: "black",
   },
 
   cameraOverlay: {
