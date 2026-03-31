@@ -44,6 +44,7 @@ export default function PhotostripScreen({ route, navigation }) {
       });
       await saveToFirebase(result);
       setSaved(true);
+      navigation.getParent().navigate("GalleryTab", { screen: "Gallery" }); //navigate to gallery after saved successfully
     } catch (error) {
       console.error("Snapshot failed: ", error);
     } finally {
@@ -170,9 +171,9 @@ const styles = StyleSheet.create({
   },
 
   actionButton: {
-    flex: 1,
     backgroundColor: "black",
-    paddingVertical: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
     borderRadius: 30,
     alignItems: "center",
   },
@@ -201,7 +202,7 @@ const styles = StyleSheet.create({
 
   previewActions: {
     position: "absolute",
-    bottom: 20,
+    bottom: 24,
     width: SCREEN_WIDTH,
     flexDirection: "row",
     justifyContent: "center",

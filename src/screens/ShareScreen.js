@@ -49,10 +49,11 @@ export default function ShareScreen({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#550d32",
     alignItems: "center",
     justifyContent: "center",
-    gap: 16,
+    paddingTop: 0,
+    gap: 24,
   },
 
   stripImage: {

@@ -78,7 +78,7 @@ export default function EditScreen({ route, navigation }) {
           onPress={handleNext}
         >
           <Text style={[styles.actionButtonText, styles.nextButtonText]}>
-            Next
+            Complete
           </Text>
         </TouchableOpacity>
       </View>
@@ -137,18 +137,18 @@ const styles = StyleSheet.create({
 
   actions: {
     position: "absolute",
-    bottom: 20,
+    bottom: 24,
     width: SCREEN_WIDTH,
     flexDirection: "row",
     justifyContent: "center",
-    gap: 16,
-    paddingHorizontal: 30,
+    gap: 12,
+    paddingHorizontal: 80,
   },
 
   actionButton: {
     flex: 1,
     backgroundColor: "white",
-    paddingVertical: 12,
+    paddingVertical: 16,
     borderRadius: 30,
     alignItems: "center",
     borderWidth: 1.5,
