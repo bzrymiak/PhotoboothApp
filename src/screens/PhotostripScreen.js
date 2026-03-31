@@ -18,22 +18,21 @@ import {
   firebase_db,
 } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
+import { useFonts, AmaticSC_700Bold } from "@expo-google-fonts/amatic-sc"; //font for captions
 
 const NUM_COLUMNS = 1;
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const PHOTO_HEIGHT = SCREEN_WIDTH / 2.1;
-const PHOTO_WIDTH = PHOTO_HEIGHT / 1.1;
+const PHOTO_HEIGHT = SCREEN_WIDTH / 2.0; // match EditScreen
+const PHOTO_WIDTH = PHOTO_HEIGHT / 1.4; // match EditScreen
 
 export default function PhotostripScreen({ route, navigation }) {
-  const { photos } = route.params; //3 base64 images passed from CameraScreen
+  const { photos, caption } = route.params; //images and caption passed from CameraScreen
   const snapshotRef = useRef();
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
-  // const { photos, deletePhoto } = usePhotos();
-  // const snapshotRef = useRef();
-  // const [snapshotImg, setSnapshotImg] = useState();
-  // const [mediaPermission, requestMediaPermission] =
-  //   MediaLibrary.usePermissions();
+  const [fontsLoaded] = useFonts({
+    AmaticSC_700Bold,
+  });
 
   const snapshot = async () => {
     if (saving || saved) return;
@@ -45,6 +44,7 @@ export default function PhotostripScreen({ route, navigation }) {
       });
       await saveToFirebase(result);
       setSaved(true);
+      navigation.getParent().navigate("GalleryTab", { screen: "Gallery" }); //navigate to gallery after saved successfully
     } catch (error) {
       console.error("Snapshot failed: ", error);
     } finally {
@@ -82,72 +82,20 @@ export default function PhotostripScreen({ route, navigation }) {
     console.log("Photostrip saved to Firebase with ID:", docRef.id);
   }
 
-  // try {
-  //   const filename = `photostrips/${Date.now()}.png`;
-  //   const reference = storage().ref(filename);
-  //   await reference.putFile(photoPath);
-
-  //   const downloadURL = await reference.getDownloadURL();
-
-  //   await firestore().collection("photostrips").add({
-  //     url: downloadURL,
-  //     createdAt: firestore.FieldValue.serverTimestamp(),
-  //   });
-
-  //   console.log("Photostrip saved to Firebase:", downloadURL);
-  // } catch (error) {
-  //   console.error("Firebase upload error:", error);
-  // }
-
-  // Save to device camera roll
-  // async function saveLocally(photo) {
-  //   if (!mediaPermission?.granted) {
-  //     const { granted } = await requestMediaPermission();
-  //     if (!granted) {
-  //       console.log("Media library permission not granted");
-  //       return;
-  //     }
-  //   }
-  //   await MediaLibrary.saveToLibraryAsync(photo); // takes the photo path straight from captureRef
-  // }
-
   const discard = () => {
     navigation.goBack(); // go back to camera
   };
 
-  // if (photos.length < 3) {
-  //   return (
-  //     <View style={styles.emptyContainer}>
-  //       <Text style={styles.emptyText}>No photos yet.</Text>
-  //       <Text style={styles.emptySubText}>
-  //         Take more photos to create a photostrip!
-  //       </Text>
-  //     </View>
-  //   );
-  // }
-
   return (
     <View style={styles.container}>
-      {/* debugging snapshot code */}
-      {/* {snapshotImg ? <Text>Snapshot taken</Text> : <Text>No snapshot</Text>}
-      {snapshotImg ? (
-        <View style={styles.snapshotContainer}>
-          <Image
-            resizeMode="contain"
-            style={styles.snapshotImg}
-            source={{ uri: snapshotImg }}
-          />
-        </View>
-      ) : (
-        <View />
-      )} */}
-
-      <View ref={snapshotRef} collapsable={false}>
+      <View ref={snapshotRef} collapsable={false} style={styles.stripContainer}>
         <FlatList
           data={photos}
           style={styles.shadow}
           keyExtractor={(_, index) => index.toString()}
           numColumns={NUM_COLUMNS}
+          scrollEnabled={false}
+          contentContainerStyle={{ gap: 0, padding: 0 }}
           renderItem={({ item, index }) => (
             <View style={styles.photoWrapper}>
               <Image
@@ -158,13 +106,14 @@ export default function PhotostripScreen({ route, navigation }) {
             </View>
           )}
         />
+        {caption ? <Text style={styles.captionText}>{caption}</Text> : null}
       </View>
 
       {/* Bottom action buttons */}
       <View style={styles.previewActions}>
-        <TouchableOpacity style={styles.actionButton} onPress={discard}>
-          <Text style={styles.actionButtonText}>Discard</Text>
-        </TouchableOpacity>
+        {/* <TouchableOpacity style={styles.actionButton} onPress={discard}>
+          <Text style={styles.actionButtonText}>Delete</Text>
+        </TouchableOpacity> */}
 
         <TouchableOpacity
           style={[styles.actionButton, styles.localButton]}
@@ -181,37 +130,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    paddingTop: 20,
-    paddingInline: 40,
-  },
-
-  emptyContainer: {
-    flex: 1,
-    backgroundColor: "white",
-    justifyContent: "center",
     alignItems: "center",
+    paddingTop: 24,
   },
 
-  emptyText: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-
-  emptySubText: {
-    color: "gray",
-    fontSize: 14,
+  stripContainer: {
+    backgroundColor: "white",
+    shadowColor: "grey",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    gap: 2,
+    marginBottom: 100,
+    padding: 8,
   },
 
   photoWrapper: {
     width: PHOTO_HEIGHT,
     height: PHOTO_WIDTH,
-    position: "relative",
     alignSelf: "center",
-    margin: 5,
-    outlineWidth: 15,
-    outlineColor: "white",
+    margin: 6,
   },
 
   photo: {
@@ -219,26 +157,35 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 
-  shadow: {
-    paddingTop: 10,
+  captionText: {
+    fontFamily: "AmaticSC_700Bold",
+    fontSize: 24,
+    color: "black",
+    textAlign: "center",
     paddingBottom: 20,
-    shadowColor: "grey",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 6,
+  },
+
+  photo: {
+    width: "100%",
+    height: "100%",
   },
 
   actionButton: {
-    flex: 1,
-    backgroundColor: "rgba(186, 186, 186, 0.4)",
-    paddingVertical: 14,
+    backgroundColor: "black",
+    paddingVertical: 16,
+    paddingHorizontal: 24,
     borderRadius: 30,
-    width: 10,
     alignItems: "center",
   },
 
+  actionButtonText: {
+    color: "white",
+    fontWeight: 600,
+    fontSize: 16,
+  },
+
   localButton: {
-    backgroundColor: "rgba(186, 186, 186, 0.9)",
+    backgroundColor: "black",
   },
 
   cameraOverlay: {
@@ -255,7 +202,7 @@ const styles = StyleSheet.create({
 
   previewActions: {
     position: "absolute",
-    bottom: 20,
+    bottom: 24,
     width: SCREEN_WIDTH,
     flexDirection: "row",
     justifyContent: "center",
