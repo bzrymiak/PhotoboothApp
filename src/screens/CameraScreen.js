@@ -1,6 +1,6 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,21 +9,41 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 // import { usePhotos } from "../context/PhotoContext";
 
 export default function CameraScreen({ navigation }) {
-  const [facing, setFacing] = useState("back");
+  const [facing, setFacing] = useState("back"); // handle camera orientation
   const [permission, requestPermission] = useCameraPermissions();
   const [mediaPermission, requestMediaPermission] =
     MediaLibrary.usePermissions();
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [previewPhoto, setPreviewPhoto] = useState(null); // Holds the taken photo
   const [photos, setPhotos] = useState([]); // holds up to 3 base64 images locally
+  const [counter, setCounter] = useState(3); // photo preview timer
 
   const cameraRef = useRef(null);
   // const { addPhoto } = usePhotos();
   // const { photos } = usePhotos();
 
+  // check if user is on the page
+  const isFocused = useIsFocused();
+
+  // timer function for the photo preview
+  function timer() {
+    setCounter(3);
+    const id = setInterval(() => {
+      setCounter((prev) => {
+        if (prev <= 1) {
+          clearInterval(id);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }
+
+  // make sure camera permission is granted
   if (!permission) return <View />;
   if (!permission.granted) {
     return (
@@ -72,7 +92,6 @@ export default function CameraScreen({ navigation }) {
     const base64Image = `data:image/jpg;base64,${previewPhoto.base64}`;
     const updatedPhotos = [...photos, base64Image];
     setPhotos(updatedPhotos);
-    setPreviewPhoto(null);
 
     // Once we have 3 photos, pass them to PhotostripScreen via nav params
     if (updatedPhotos.length === 3) {
@@ -80,19 +99,6 @@ export default function CameraScreen({ navigation }) {
       setPhotos([]); // reset for next strip
     }
   }
-
-  // Save to device camera roll
-  // async function saveLocally() {
-  //   if (!mediaPermission?.granted) {
-  //     const { granted } = await requestMediaPermission();
-  //     if (!granted) {
-  //       console.log("Media library permission not granted");
-  //       return;
-  //     }
-  //   }
-  //   await MediaLibrary.saveToLibraryAsync(previewPhoto.uri);
-  //   setPreviewPhoto(null);
-  // }
 
   // Save to device camera roll
   async function saveLocally() {
@@ -107,16 +113,18 @@ export default function CameraScreen({ navigation }) {
     setPreviewPhoto(null);
   }
 
-  function discardPhoto() {
-    setPreviewPhoto(null);
-  }
-
   // Discard photo and go back to camera
   function discardPhoto() {
     setPreviewPhoto(null);
   }
 
+  // preview screen --> only triggers after a photo is taken
   if (previewPhoto) {
+    if (counter == 0) {
+      setPreviewPhoto(null);
+      saveToApp();
+    }
+
     return (
       <View style={styles.previewContainer}>
         <Image
@@ -131,8 +139,18 @@ export default function CameraScreen({ navigation }) {
         </TouchableOpacity>
 
         {/* Bottom action buttons */}
+        <View style={styles.counterContainer}>
+          <Text style={styles.counterText}>Preview ends in {counter}...</Text>
+        </View>
+
         <View style={styles.previewActions}>
-          <TouchableOpacity style={styles.actionButton} onPress={saveToApp}>
+          <View style={styles.photoButton}>
+            <Text style={styles.photoCounterText}>
+              Photos: {photos.length + 1} / 3
+            </Text>
+          </View>
+
+          {/* <TouchableOpacity style={styles.actionButton} onPress={saveToApp}>
             <Text style={styles.actionButtonText}>Save to App</Text>
           </TouchableOpacity>
 
@@ -141,43 +159,48 @@ export default function CameraScreen({ navigation }) {
             onPress={saveLocally}
           >
             <Text style={styles.actionButtonText}>Save to Phone</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     );
   }
 
+  // MAIN CAMERA RENDERING
   return (
-    <View style={{ flex: 1, backgroundColor: "black" }}>
-      <CameraView
-        style={StyleSheet.absoluteFill}
-        facing={facing}
-        ref={cameraRef}
-        onCameraReady={() => setIsCameraReady(true)}
-      />
-
-      {/* Bottom controls */}
-      <View style={styles.cameraOverlay}>
-        <View style={styles.sideControl} />
-
-        <TouchableOpacity
-          style={[styles.snapButton, !isCameraReady && { opacity: 0.5 }]}
-          onPress={takePicture}
-          disabled={!isCameraReady}
+    // only render the camera when the user is actively on this page
+    isFocused && (
+      <View style={{ flex: 1, backgroundColor: "black" }}>
+        <CameraView
+          style={StyleSheet.absoluteFill}
+          facing={facing}
+          ref={cameraRef}
+          onCameraReady={() => setIsCameraReady(true)}
         />
 
-        <View style={styles.sideControl}>
-          <TouchableOpacity style={styles.flipButton} onPress={toggleCamera}>
-            <Image
-              style={styles.flipButtonImg}
-              source={require("../../assets/flipButtonIcon.png")}
-            />
-            {/*CHANGE TO FLIP ICON*/}
-            {/* LATER */}
-          </TouchableOpacity>
+        {/* Bottom controls */}
+        <View style={styles.cameraOverlay}>
+          <View style={styles.sideControl} />
+
+          <TouchableOpacity
+            style={[styles.snapButton, !isCameraReady && { opacity: 0.5 }]}
+            onPress={() => {
+              takePicture();
+              timer(); // trigger the timer so the photo preview only shows for a few seconds
+            }}
+            disabled={!isCameraReady}
+          />
+
+          <View style={styles.sideControl}>
+            <TouchableOpacity style={styles.flipButton} onPress={toggleCamera}>
+              <Image
+                style={styles.flipButtonImg}
+                source={require("../../assets/flipButtonIcon.png")}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+    )
   );
 }
 
@@ -239,6 +262,35 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
     color: "black",
+  },
+
+  photoButton: {
+    backgroundColor: "rgba(255,255,255,0.9)",
+    paddingVertical: 14,
+    borderRadius: 30,
+    width: 120,
+    alignItems: "center",
+  },
+
+  photoCounterText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "black",
+  },
+
+  counterContainer: {
+    position: "absolute",
+    bottom: 100,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 16,
+    paddingHorizontal: 20,
+  },
+
+  counterText: {
+    color: "white",
+    fontWeight: 600,
   },
 
   // ── Camera styles ──
