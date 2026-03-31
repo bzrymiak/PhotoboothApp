@@ -18,6 +18,7 @@ import {
   firebase_db,
 } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
+import { useFonts, AmaticSC_700Bold } from "@expo-google-fonts/amatic-sc"; //font for captions
 
 const NUM_COLUMNS = 1;
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -29,6 +30,9 @@ export default function PhotostripScreen({ route, navigation }) {
   const snapshotRef = useRef();
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [fontsLoaded] = useFonts({
+    AmaticSC_700Bold,
+  });
 
   const snapshot = async () => {
     if (saving || saved) return;
@@ -137,15 +141,14 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     gap: 2,
     marginBottom: 100,
-    padding: 0,
+    padding: 8,
   },
 
   photoWrapper: {
     width: PHOTO_HEIGHT,
     height: PHOTO_WIDTH,
     alignSelf: "center",
-    margin: 12,
-    marginBottom: 2,
+    margin: 6,
   },
 
   photo: {
@@ -154,10 +157,11 @@ const styles = StyleSheet.create({
   },
 
   captionText: {
-    fontSize: 14,
+    fontFamily: "AmaticSC_700Bold",
+    fontSize: 24,
     color: "black",
     textAlign: "center",
-    paddingBottom: 32,
+    paddingBottom: 20,
   },
 
   photo: {

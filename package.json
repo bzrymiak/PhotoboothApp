@@ -9,6 +9,8 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/amatic-sc": "^0.4.2",
+    "@expo-google-fonts/reenie-beanie": "^0.4.1",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-firebase/auth": "^23.8.8",
     "@react-native-firebase/firestore": "^23.8.8",

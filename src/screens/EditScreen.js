@@ -11,6 +11,7 @@ import {
   Platform,
 } from "react-native";
 import { useState } from "react";
+import { useFonts, AmaticSC_700Bold } from "@expo-google-fonts/amatic-sc"; //font for captions
 
 const NUM_COLUMNS = 1;
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -20,6 +21,9 @@ const PHOTO_WIDTH = PHOTO_HEIGHT / 1.4;
 export default function EditScreen({ route, navigation }) {
   const { photos } = route.params;
   const [caption, setCaption] = useState("");
+  const [fontsLoaded] = useFonts({
+    AmaticSC_700Bold,
+  });
 
   const handleNext = () => {
     // Pass both photos and caption to PhotostripScreen
@@ -98,15 +102,14 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     gap: 2,
     marginBottom: 100,
-    padding: 0,
+    padding: 8,
   },
 
   photoWrapper: {
     width: PHOTO_HEIGHT,
     height: PHOTO_WIDTH,
     alignSelf: "center",
-    margin: 12,
-    marginBottom: 2,
+    margin: 6,
   },
 
   photo: {
@@ -125,10 +128,11 @@ const styles = StyleSheet.create({
   },
 
   captionInput: {
-    fontSize: 14,
+    fontFamily: "AmaticSC_700Bold",
+    fontSize: 24,
     color: "black",
     textAlign: "center",
-    paddingBottom: 32,
+    paddingBottom: 20,
   },
 
   actions: {

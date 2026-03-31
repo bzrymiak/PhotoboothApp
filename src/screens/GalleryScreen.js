@@ -14,8 +14,8 @@ import { firebase_db, firebase_auth } from "../firebaseConfig";
 
 const NUM_COLUMNS = 3;
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const STRIP_WIDTH = (SCREEN_WIDTH - 48) / NUM_COLUMNS;
-const STRIP_HEIGHT = STRIP_WIDTH * 2.4; //height of strips calculated based on width
+const STRIP_WIDTH = (SCREEN_WIDTH - 53) / NUM_COLUMNS;
+const STRIP_HEIGHT = STRIP_WIDTH * 2.45; //height of strips calculated based on width
 
 export default function GalleryScreen({ navigation }) {
   const [strips, setStrips] = useState([]);
@@ -68,9 +68,7 @@ export default function GalleryScreen({ navigation }) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>No strips yet.</Text>
-        <Text style={styles.emptySubText}>
-          Take 3 photos and save your first photostrip!
-        </Text>
+        <Text style={styles.emptySubText}>Save your first photostrip!</Text>
       </View>
     );
   }
@@ -104,7 +102,7 @@ export default function GalleryScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "f0f0f0",
+    backgroundColor: "#550d32",
   },
 
   grid: {
@@ -113,33 +111,13 @@ const styles = StyleSheet.create({
   },
 
   row: {
-    gap: 8, //gap between photostrips
-    marginBottom: 12, //space between rows photostrips
-  },
-
-  emptyContainer: {
-    flex: 1,
-    backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-  },
-
-  emptyText: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "black",
-  },
-
-  emptySubText: {
-    color: "gray",
-    fontSize: 14,
+    gap: 10, //gap between photostrips
+    marginBottom: 16, //space between rows photostrips
   },
 
   stripWrapper: {
     width: STRIP_WIDTH,
     height: STRIP_HEIGHT,
-    borderRadius: 8,
     overflow: "hidden",
   },
 
