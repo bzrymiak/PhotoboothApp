@@ -10,7 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { useState } from "react";
+import { useState, useLayoutEffect } from "react";
 import { useFonts, AmaticSC_700Bold } from "@expo-google-fonts/amatic-sc"; //font for captions
 
 const NUM_COLUMNS = 1;
@@ -29,6 +29,13 @@ export default function EditScreen({ route, navigation }) {
     // Pass both photos and caption to PhotostripScreen
     navigation.navigate("Photostrip", { photos, caption });
   };
+
+  // make the back button named "back" instead of the previous screen's name
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerBackTitle: "Back",
+    });
+  }, [navigation]);
 
   return (
     <KeyboardAvoidingView
@@ -78,7 +85,7 @@ export default function EditScreen({ route, navigation }) {
           onPress={handleNext}
         >
           <Text style={[styles.actionButtonText, styles.nextButtonText]}>
-            Complete
+            Next
           </Text>
         </TouchableOpacity>
       </View>

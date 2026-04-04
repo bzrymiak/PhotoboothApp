@@ -81,7 +81,7 @@ export default function CameraScreen({ navigation }) {
 
     // Once we have 3 photos, pass them to PhotostripScreen via nav params
     if (updatedPhotos.length === 3) {
-      navigation.navigate("Edit", { photos: updatedPhotos }); //navigate to edit screen
+      navigation.navigate("Add a Caption", { photos: updatedPhotos }); //navigate to edit screen
       setPhotos([]); // reset for next strip
     }
   }
@@ -154,7 +154,7 @@ export default function CameraScreen({ navigation }) {
   // MAIN CAMERA RENDERING
   return (
     // only render the camera when the user is actively on this page
-    isFocused && (
+    isFocused ? (
       <View style={{ flex: 1, backgroundColor: "black" }}>
         <CameraView
           style={StyleSheet.absoluteFill}
@@ -186,7 +186,7 @@ export default function CameraScreen({ navigation }) {
           </View>
         </View>
       </View>
-    )
+    ) : null
   );
 }
 
