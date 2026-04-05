@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,51 +7,34 @@ import {
   Image,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { useRoute } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import { doc, getDoc } from "firebase/firestore";
+import { firebase_db, firebase_auth } from "../firebaseConfig";
 
 export default function ProfileScreen({ navigation }) {
-  const route = useRoute();
-
   const [name, setName] = useState("User Name");
   const [bio, setBio] = useState("Bio");
   const [profileImage, setProfileImage] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
 
-  useEffect(() => {
-    (async () => {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        alert("Permission required to access photos");
-      }
-    })();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const loadProfile = async () => {
+        const uid = firebase_auth.currentUser?.uid;
+        if (!uid) return;
 
-  useEffect(() => {
-    const loadProfile = async () => {
-      const storedName = await AsyncStorage.getItem("profileName");
-      const storedBio = await AsyncStorage.getItem("profileBio");
-      const storedProfile = await AsyncStorage.getItem("profileImage");
-      const storedCover = await AsyncStorage.getItem("coverImage");
+        const snap = await getDoc(doc(firebase_db, "users", uid));
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.name) setName(data.name);
+          if (data.bio) setBio(data.bio);
+          if (data.profileImage) setProfileImage(data.profileImage);
+        }
+      };
 
-      if (storedName) setName(storedName);
-      if (storedBio) setBio(storedBio);
-      if (storedProfile) setProfileImage(storedProfile);
-      if (storedCover) setCoverImage(storedCover);
-    };
-
-    loadProfile();
-  }, []);
-
-  useEffect(() => {
-    if (route.params?.updatedName) {
-      setName(route.params.updatedName);
-      setBio(route.params.updatedBio);
-      setProfileImage(route.params.updatedProfileImage);
-      setCoverImage(route.params.updatedCoverImage);
-    }
-  }, [route.params]);
+      loadProfile();
+    }, [])
+  );
 
   const pickImage = async (type) => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -68,25 +51,14 @@ export default function ProfileScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => pickImage("cover")}>
-        {coverImage ? (
-          <Image source={{ uri: coverImage }} style={styles.cover} />
-        ) : (
-          <View style={styles.coverPlaceholder} />
-        )}
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.profileWrapper}
-        onPress={() => pickImage("profile")}
-      >
+   <View style={styles.container}>
+      <View style={styles.profileWrapper}>
         {profileImage ? (
           <Image source={{ uri: profileImage }} style={styles.profileImage} />
         ) : (
           <View style={styles.profilePlaceholder} />
         )}
-      </TouchableOpacity>
+      </View>
 
       <View style={styles.info}>
         <Text style={styles.name}>{name}</Text>
@@ -119,7 +91,6 @@ export default function ProfileScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
   cover: { width: "100%", height: 220 },
-  coverPlaceholder: { width: "100%", height: 220, backgroundColor: "#ddd" },
   profileWrapper: {
     position: "absolute",
     top: 160,
@@ -128,6 +99,7 @@ const styles = StyleSheet.create({
     borderColor: "#fff",
     borderRadius: 100,
   },
+
   profileImage: { width: 120, height: 120, borderRadius: 60 },
   profilePlaceholder: { width: 120, height: 120, borderRadius: 60, backgroundColor: "#bbb" },
   info: { marginTop: 80, paddingHorizontal: 20 },
@@ -141,6 +113,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginRight: 10,
   },
+
+
   settingsBtn: {
     backgroundColor: "#000",
     paddingVertical: 12,

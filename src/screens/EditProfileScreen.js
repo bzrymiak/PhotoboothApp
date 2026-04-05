@@ -6,9 +6,20 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { doc, setDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { firebase_db, firebase_storage, firebase_auth } from "../firebaseConfig";
+
+async function uploadImage(uri, path) {
+  const response = await fetch(uri);
+  const blob = await response.blob();
+  const storageRef = ref(firebase_storage, path);
+  await uploadBytes(storageRef, blob);
+  return await getDownloadURL(storageRef);
+}
 
 export default function EditProfileScreen({ route, navigation }) {
   const {
@@ -22,14 +33,12 @@ export default function EditProfileScreen({ route, navigation }) {
   const [bio, setBio] = useState(initialBio);
   const [profileImage, setProfileImage] = useState(initialProfile);
   const [coverImage, setCoverImage] = useState(initialCover);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        alert("Permission required to access photos");
-      }
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") alert("Permission required to access photos");
     })();
   }, []);
 
@@ -48,24 +57,47 @@ export default function EditProfileScreen({ route, navigation }) {
   };
 
   const saveProfile = async () => {
-    await AsyncStorage.setItem("profileName", name);
-    await AsyncStorage.setItem("profileBio", bio);
-    if (profileImage) await AsyncStorage.setItem("profileImage", profileImage);
-    if (coverImage) await AsyncStorage.setItem("coverImage", coverImage);
+    const uid = firebase_auth.currentUser?.uid;
+    if (!uid) return;
 
-    navigation.navigate("ProfileScreen", {
-      updatedName: name,
-      updatedBio: bio,
-      updatedProfileImage: profileImage,
-      updatedCoverImage: coverImage,
-    });
+    setSaving(true);
+    try {
+      let profileImageUrl = profileImage;
+      let coverImageUrl = coverImage;
+
+      if (profileImage && !profileImage.startsWith("https://")) {
+        profileImageUrl = await uploadImage(profileImage, `users/${uid}/profile.jpg`);
+      }
+      if (coverImage && !coverImage.startsWith("https://")) {
+        coverImageUrl = await uploadImage(coverImage, `users/${uid}/cover.jpg`);
+      }
+
+      await setDoc(doc(firebase_db, "users", uid), {
+        name,
+        bio,
+        profileImage: profileImageUrl ?? null,
+        coverImage: coverImageUrl ?? null,
+      });
+
+      navigation.goBack();
+    } catch (e) {
+      console.error("Failed to save profile:", e);
+      alert("Something went wrong saving your profile.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const clearProfile = async () => {
-    await AsyncStorage.removeItem("profileName");
-    await AsyncStorage.removeItem("profileBio");
-    await AsyncStorage.removeItem("profileImage");
-    await AsyncStorage.removeItem("coverImage");
+    const uid = firebase_auth.currentUser?.uid;
+    if (!uid) return;
+
+    await setDoc(doc(firebase_db, "users", uid), {
+      name: "",
+      bio: "",
+      profileImage: null,
+      coverImage: null,
+    });
 
     setName("");
     setBio("");
@@ -108,8 +140,12 @@ export default function EditProfileScreen({ route, navigation }) {
         placeholder="Bio"
       />
 
-      <TouchableOpacity style={styles.saveBtn} onPress={saveProfile}>
-        <Text style={{ color: "#fff" }}>Save</Text>
+      <TouchableOpacity style={styles.saveBtn} onPress={saveProfile} disabled={saving}>
+        {saving ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={{ color: "#fff" }}>Save</Text>
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.clearBtn} onPress={clearProfile}>
