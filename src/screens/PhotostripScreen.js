@@ -36,7 +36,7 @@ const STRIP_COLORS = [
 ];
 
 export default function PhotostripScreen({ route, navigation }) {
-  const { photos, caption } = route.params; //images and caption passed from CameraScreen
+  const { photos, caption, selectedFont } = route.params; //images, caption, and font passed from CameraScreen
   const snapshotRef = useRef();
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -124,7 +124,14 @@ export default function PhotostripScreen({ route, navigation }) {
             </View>
           )}
         />
-        {caption ? <Text style={styles.captionText}>{caption}</Text> : null}
+        <Text
+          style={[
+            styles.captionText,
+            selectedFont ? { fontFamily: selectedFont } : null,
+          ]}
+        >
+          {caption}
+        </Text>
       </View>
 
       {/* Colour picker dots - absolutely positioned to the left of the strip */}
