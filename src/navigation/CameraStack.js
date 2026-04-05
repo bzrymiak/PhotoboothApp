@@ -11,7 +11,7 @@ export default function CameraEditStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Camera" component={CameraScreen} />
-      <Stack.Screen name="Edit" component={EditScreen} />
+      <Stack.Screen name="Add a Caption" component={EditScreen} />
       <Stack.Screen name="Photostrip" component={PhotostripScreen} />
     </Stack.Navigator>
   );

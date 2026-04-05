@@ -11,7 +11,7 @@ export default function GalleryPhotoStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Gallery" component={GalleryScreen} />
-      <Stack.Screen name="Photostrip" component={PhotostripScreen} />
+      {/* <Stack.Screen name="Photostrip" component={PhotostripScreen} /> */}
       <Stack.Screen name="Share" component={ShareScreen} />
     </Stack.Navigator>
   );

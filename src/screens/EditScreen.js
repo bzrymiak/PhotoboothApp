@@ -9,34 +9,125 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
 } from "react-native";
-import { useState } from "react";
-import { useFonts, AmaticSC_700Bold } from "@expo-google-fonts/amatic-sc"; //font for captions
+import { useState, useLayoutEffect, useEffect } from "react";
+import * as Font from "expo-font";
 
 const NUM_COLUMNS = 1;
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const PHOTO_HEIGHT = SCREEN_WIDTH / 2.0;
 const PHOTO_WIDTH = PHOTO_HEIGHT / 1.4;
 
+const API_KEY = process.env.EXPO_PUBLIC_GOOGLE_FONTS_API_KEY;
+
+const FONT_NAMES = [
+  "Dancing Script",
+  "Pacifico",
+  "Caveat",
+  "Satisfy",
+  "Courgette",
+  "Lobster",
+  "Amatic SC",
+  "Indie Flower",
+  "Sacramento",
+  "Great Vibes",
+];
+
 export default function EditScreen({ route, navigation }) {
   const { photos } = route.params;
   const [caption, setCaption] = useState("");
-  const [fontsLoaded] = useFonts({
-    AmaticSC_700Bold,
-  });
+  const [isFocused, setIsFocused] = useState(false);
+  const [fonts, setFonts] = useState([]);
+  const [loadedFonts, setLoadedFonts] = useState({});
+  const [selectedFont, setSelectedFont] = useState(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ headerBackTitle: "Back" });
+  }, [navigation]);
+
+  useEffect(() => {
+    fetchFonts();
+  }, []);
+
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardWillShow", (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hide = Keyboard.addListener("keyboardWillHide", () => {
+      setKeyboardHeight(0);
+    });
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+
+  async function fetchFonts() {
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/webfonts/v1/webfonts?key=${API_KEY}&sort=popularity`,
+      );
+      const data = await response.json();
+
+      const filtered = data.items.filter((f) => FONT_NAMES.includes(f.family));
+      const sorted = FONT_NAMES.map((name) =>
+        filtered.find((f) => f.family === name),
+      ).filter(Boolean);
+
+      setFonts(sorted);
+
+      if (sorted.length > 0) {
+        await loadFont(sorted[0]);
+        setSelectedFont(sorted[0].family);
+      }
+    } catch (error) {
+      console.error("Failed to fetch fonts:", error);
+    }
+  }
+
+  async function loadFont(fontData) {
+    const fontFamily = fontData.family;
+    if (loadedFonts[fontFamily]) return;
+
+    try {
+      const url =
+        fontData.files?.regular ||
+        fontData.files?.["400"] ||
+        Object.values(fontData.files)[0];
+
+      const secureUrl = url.replace("http://", "https://");
+      await Font.loadAsync({ [fontFamily]: { uri: secureUrl } });
+      setLoadedFonts((prev) => ({ ...prev, [fontFamily]: true }));
+    } catch (error) {
+      console.error(`Failed to load font ${fontFamily}:`, error);
+    }
+  }
+
+  async function handleSelectFont(fontData) {
+    const fontFamily = fontData.family;
+    console.log("tapped:", fontFamily);
+
+    if (!loadedFonts[fontFamily]) {
+      await loadFont(fontData);
+    }
+
+    setSelectedFont(fontFamily);
+    setLoadedFonts((prev) => ({ ...prev, [fontFamily]: true }));
+  }
 
   const handleNext = () => {
-    // Pass both photos and caption to PhotostripScreen
-    navigation.navigate("Photostrip", { photos, caption });
+    navigation.navigate("Photostrip", { photos, caption, selectedFont });
   };
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={90}
     >
       <View style={styles.stripContainer}>
-        {/* Photos */}
         <FlatList
           data={photos}
           keyExtractor={(_, index) => index.toString()}
@@ -53,16 +144,59 @@ export default function EditScreen({ route, navigation }) {
             </View>
           )}
         />
-
         <TextInput
-          style={styles.captionInput}
+          style={[
+            styles.captionInput,
+            selectedFont && loadedFonts[selectedFont]
+              ? { fontFamily: selectedFont }
+              : null,
+          ]}
           placeholder="add a caption..."
           placeholderTextColor="#aaa"
           value={caption}
           onChangeText={setCaption}
           maxLength={24}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
         />
       </View>
+
+      {isFocused && fonts.length > 0 && (
+        <View style={[styles.fontPicker, { bottom: keyboardHeight - 74 }]}>
+          <FlatList
+            data={fonts}
+            keyExtractor={(item) => item.family}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+            onViewableItemsChanged={({ viewableItems }) => {
+              viewableItems.forEach(({ item }) => loadFont(item));
+            }}
+            viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => handleSelectFont(item)}
+                style={[
+                  styles.fontOption,
+                  selectedFont === item.family && styles.fontOptionSelected,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.fontOptionText,
+                    loadedFonts[item.family]
+                      ? { fontFamily: item.family }
+                      : null,
+                  ]}
+                >
+                  {item.family}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      )}
 
       {/* Bottom action buttons */}
       <View style={styles.actions}>
@@ -78,7 +212,7 @@ export default function EditScreen({ route, navigation }) {
           onPress={handleNext}
         >
           <Text style={[styles.actionButtonText, styles.nextButtonText]}>
-            Complete
+            Next
           </Text>
         </TouchableOpacity>
       </View>
@@ -92,6 +226,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
     paddingTop: 24,
+    paddingBottom: 24,
   },
 
   stripContainer: {
@@ -100,9 +235,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 6,
-    gap: 2,
-    marginBottom: 100,
     padding: 8,
+    marginBottom: 100,
   },
 
   photoWrapper: {
@@ -117,22 +251,42 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 
-  // Extra space at the bottom of the strip for the caption
-  captionArea: {
-    width: PHOTO_HEIGHT,
-    height: 60,
-    alignSelf: "center",
-    justifyContent: "center",
-    paddingHorizontal: 10,
-    paddingBottom: 40,
-  },
-
   captionInput: {
-    fontFamily: "AmaticSC_700Bold",
     fontSize: 24,
     color: "black",
     textAlign: "center",
     paddingBottom: 20,
+  },
+
+  fontPicker: {
+    position: "absolute",
+    width: SCREEN_WIDTH,
+    height: 44,
+    justifyContent: "center",
+    shadowColor: "#ccc",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    zIndex: 999,
+  },
+
+  fontOption: {
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    borderRadius: 12,
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+
+  fontOptionSelected: {
+    backgroundColor: "#e5e5e5",
+  },
+
+  fontOptionText: {
+    fontSize: 18,
+    color: "black",
   },
 
   actions: {

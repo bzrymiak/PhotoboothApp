@@ -9,7 +9,7 @@ import {
 } from "react-native";
 // import { usePhotos, addPhoto } from "../context/PhotoContext";
 import { captureRef } from "react-native-view-shot";
-import { useRef, useState } from "react";
+import { useRef, useState, useLayoutEffect } from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import {
@@ -25,14 +25,32 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 const PHOTO_HEIGHT = SCREEN_WIDTH / 2.0; // match EditScreen
 const PHOTO_WIDTH = PHOTO_HEIGHT / 1.4; // match EditScreen
 
+//set strip colours
+const STRIP_COLORS = [
+  "#FFFFFF",
+  "#FFE5D4",
+  "#FBD5FF",
+  "#DFEFFF",
+  "#EBFFDF",
+  "#FFDFE6",
+];
+
 export default function PhotostripScreen({ route, navigation }) {
-  const { photos, caption } = route.params; //images and caption passed from CameraScreen
+  const { photos, caption, selectedFont } = route.params; //images, caption, and font passed from CameraScreen
   const snapshotRef = useRef();
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [stripColor, setStripColor] = useState("#FFFFF"); //default strip is white
   const [fontsLoaded] = useFonts({
     AmaticSC_700Bold,
   });
+
+  // make the back button named "back" instead of the previous screen's name
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerBackTitle: "Back",
+    });
+  }, [navigation]);
 
   const snapshot = async () => {
     if (saving || saved) return;
@@ -44,8 +62,11 @@ export default function PhotostripScreen({ route, navigation }) {
       });
       await saveToFirebase(result);
       setSaved(true);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Camera" }],
+      }); //reset camera stack back to cameraScreen
       navigation.getParent().navigate("GalleryTab", { screen: "Gallery" }); //navigate to gallery after saved successfully
-    } catch (error) {
       console.error("Snapshot failed: ", error);
     } finally {
       setSaving(false);
@@ -62,41 +83,38 @@ export default function PhotostripScreen({ route, navigation }) {
       });
     });
 
-    console.log("uid:", uid);
-
     const filename = `photostrips/${uid}/${Date.now()}.png`;
     const reference = ref(firebase_storage, filename);
-
     const response = await fetch(photoPath);
     const blob = await response.blob();
-
     await uploadBytes(reference, blob);
     const downloadURL = await getDownloadURL(reference);
 
     const docRef = await addDoc(collection(firebase_db, "photostrips"), {
       uid,
       url: downloadURL,
+      storagePath: filename,
       createdAt: serverTimestamp(),
     });
 
     console.log("Photostrip saved to Firebase with ID:", docRef.id);
   }
 
-  const discard = () => {
-    navigation.goBack(); // go back to camera
-  };
-
   return (
     <View style={styles.container}>
-      <View ref={snapshotRef} collapsable={false} style={styles.stripContainer}>
+      {/* Photostrip - standalone, this is what gets snapshotted */}
+      <View
+        ref={snapshotRef}
+        collapsable={false}
+        style={[styles.stripContainer, { backgroundColor: stripColor }]}
+      >
         <FlatList
           data={photos}
-          style={styles.shadow}
           keyExtractor={(_, index) => index.toString()}
           numColumns={NUM_COLUMNS}
           scrollEnabled={false}
           contentContainerStyle={{ gap: 0, padding: 0 }}
-          renderItem={({ item, index }) => (
+          renderItem={({ item }) => (
             <View style={styles.photoWrapper}>
               <Image
                 source={{ uri: item }}
@@ -106,20 +124,41 @@ export default function PhotostripScreen({ route, navigation }) {
             </View>
           )}
         />
-        {caption ? <Text style={styles.captionText}>{caption}</Text> : null}
+        <Text
+          style={[
+            styles.captionText,
+            selectedFont ? { fontFamily: selectedFont } : null,
+          ]}
+        >
+          {caption}
+        </Text>
       </View>
 
-      {/* Bottom action buttons */}
-      <View style={styles.previewActions}>
-        {/* <TouchableOpacity style={styles.actionButton} onPress={discard}>
-          <Text style={styles.actionButtonText}>Delete</Text>
-        </TouchableOpacity> */}
+      {/* Colour picker dots - absolutely positioned to the left of the strip */}
+      <View style={styles.colorPicker}>
+        {STRIP_COLORS.map((color) => (
+          <TouchableOpacity
+            key={color}
+            onPress={() => setStripColor(color)}
+            style={[
+              styles.colorDot,
+              { backgroundColor: color },
+              stripColor === color && styles.colorDotSelected,
+            ]}
+          />
+        ))}
+      </View>
 
+      {/* Save button */}
+      <View style={styles.previewActions}>
         <TouchableOpacity
           style={[styles.actionButton, styles.localButton]}
           onPress={snapshot}
+          disabled={saving || saved}
         >
-          <Text style={styles.actionButtonText}>Save Photostrip</Text>
+          <Text style={styles.actionButtonText}>
+            {saved ? "Saved!" : "Save to Gallery"}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -132,6 +171,38 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
     paddingTop: 24,
+  },
+
+  stripWrapper: {
+    position: "relative",
+    alignItems: "center",
+    marginBottom: 100,
+  },
+
+  //color picker styling
+  colorPicker: {
+    position: "absolute",
+    left: 28,
+    top: "25%",
+    gap: 10,
+    alignItems: "center",
+  },
+
+  colorDot: {
+    width: 32,
+    height: 32,
+    borderRadius: 24,
+    shadowColor: "#ccc",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    borderWidth: 0.5,
+    borderColor: "#ccc",
+  },
+
+  colorDotSelected: {
+    borderWidth: 1.5,
+    borderColor: "#ccc",
   },
 
   stripContainer: {
