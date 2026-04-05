@@ -261,22 +261,27 @@ const styles = StyleSheet.create({
   fontPicker: {
     position: "absolute",
     width: SCREEN_WIDTH,
-    height: 48,
+    height: 44,
     justifyContent: "center",
+    shadowColor: "#ccc",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
     zIndex: 999,
   },
 
   fontOption: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 4,
     borderRadius: 12,
     backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "white",
   },
 
   fontOptionSelected: {
-    backgroundColor: "#dddddd",
+    backgroundColor: "#e5e5e5",
   },
 
   fontOptionText: {
