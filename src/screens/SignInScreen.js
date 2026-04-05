@@ -14,10 +14,8 @@ import {
 } from "react-native";
 import { firebase_auth } from "../firebaseConfig";
 import * as WebBrowser from "expo-web-browser";
-import * as Google from "expo-auth-session/providers/google";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
-WebBrowser.maybeCompleteAuthSession();
+WebBrowser.maybeCompleteAuthSession(); // this might be from the old google sign in stuff?
 
 export default function SignInScreen() {
   // track email and password inputs.
@@ -26,22 +24,6 @@ export default function SignInScreen() {
 
   // get the auth instance initialized in firebaseConfig.js
   const auth = firebase_auth;
-
-  // connect to Google API
-  // should turn these into variables
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    iosClientId:
-      "170069746600-fpjr73ati0489boiodpuio97iv25h4ap.apps.googleusercontent.com",
-    // TODO: find a way to get the android fingerprint
-    // androidClientId: " ",
-    webClientId:
-      "https://495405279023-t3c7fr82dqk3c6asaif6j52jtg0fro8u.apps.googleusercontent.com",
-  });
-
-  // track response for google sign in
-  useEffect(() => {
-    handleGoogleResponse();
-  }, [response]);
 
   // 1 .STANDARD EMAIL SIGN-IN
   // handle User Registration
@@ -81,36 +63,6 @@ export default function SignInScreen() {
     }
   }
 
-  // 2. GOOGLE SIGN IN
-  // funtion to sign in the user with their Google information
-  async function handleGoogleResponse() {
-    if (response?.type === "success") {
-      const { id_token } = response.params;
-      try {
-        // create a credential with the user's ID token
-        const googleCredentials = GoogleAuthProvider.credential(id_token);
-        const userCredentials = await signInWithCredential(
-          auth,
-          googleCredentials,
-        );
-        console.log("Sign in with Google success: ", userCredentials.user);
-      } catch (error) {
-        console.log(error.message);
-        alert(error.message);
-      }
-    }
-  }
-
-  // function to trigger the google sign in
-  async function handleGoogleSignIn() {
-    try {
-      await promptAsync();
-    } catch (error) {
-      console.log(error.message);
-      alert(error.message);
-    }
-  }
-
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Sign Up or Log In</Text>
@@ -135,15 +87,6 @@ export default function SignInScreen() {
       />
 
       {/* Action Buttons */}
-      <Pressable
-        onPress={handleSignUp}
-        style={({ pressed }) => [
-          { backgroundColor: pressed ? "#292929" : "#3B3B3B" },
-          styles.buttonContainer,
-        ]}
-      >
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </Pressable>
 
       <Pressable
         onPress={handleSignIn}
@@ -160,19 +103,13 @@ export default function SignInScreen() {
       </View>
 
       <Pressable
-        onPress={() => handleGoogleSignIn()}
+        onPress={handleSignUp}
         style={({ pressed }) => [
-          { backgroundColor: pressed ? "#9A9A9A" : "#D9D9D9" },
+          { backgroundColor: pressed ? "#292929" : "#3B3B3B" },
           styles.buttonContainer,
         ]}
       >
-        <View style={styles.inlineButton}>
-          <Image
-            style={styles.googleIcon}
-            source={require("../../assets/googleIcon.png")}
-          />
-          <Text style={styles.googleText}>Continue with Google</Text>
-        </View>
+        <Text style={styles.buttonText}>Sign Up</Text>
       </Pressable>
     </View>
   );
@@ -181,8 +118,8 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     padding: 16,
+    paddingTop: 140, // all content appears above the keyboard
     backgroundColor: "white",
   },
   header: {
