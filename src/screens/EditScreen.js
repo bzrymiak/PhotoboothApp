@@ -125,6 +125,7 @@ export default function EditScreen({ route, navigation }) {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={90}
     >
       <View style={styles.stripContainer}>
         <FlatList
@@ -225,7 +226,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
     paddingTop: 24,
-    paddingBottom: 90,
+    paddingBottom: 24,
   },
 
   stripContainer: {
