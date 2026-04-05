@@ -62,8 +62,11 @@ export default function PhotostripScreen({ route, navigation }) {
       });
       await saveToFirebase(result);
       setSaved(true);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Camera" }],
+      }); //reset camera stack back to cameraScreen
       navigation.getParent().navigate("GalleryTab", { screen: "Gallery" }); //navigate to gallery after saved successfully
-    } catch (error) {
       console.error("Snapshot failed: ", error);
     } finally {
       setSaving(false);
@@ -90,6 +93,7 @@ export default function PhotostripScreen({ route, navigation }) {
     const docRef = await addDoc(collection(firebase_db, "photostrips"), {
       uid,
       url: downloadURL,
+      storagePath: filename,
       createdAt: serverTimestamp(),
     });
 
@@ -143,8 +147,11 @@ export default function PhotostripScreen({ route, navigation }) {
         <TouchableOpacity
           style={[styles.actionButton, styles.localButton]}
           onPress={snapshot}
+          disabled={saving || saved}
         >
-          <Text style={styles.actionButtonText}>Save Photostrip</Text>
+          <Text style={styles.actionButtonText}>
+            {saved ? "Saved!" : "Save to Gallery"}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

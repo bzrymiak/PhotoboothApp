@@ -6,14 +6,18 @@ import {
   StyleSheet,
   Dimensions,
   Share,
+  Alert,
 } from "react-native";
 import * as FileSystem from "expo-file-system/legacy";
+import { doc, deleteDoc } from "firebase/firestore";
+import { ref, deleteObject } from "firebase/storage";
+import { firebase_db, firebase_storage } from "../firebaseConfig";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const STRIP_WIDTH = SCREEN_WIDTH * 0.75;
 const STRIP_HEIGHT = STRIP_WIDTH * 1.8;
 
-export default function ShareScreen({ route }) {
+export default function ShareScreen({ route, navigation }) {
   const { strip } = route.params;
 
   const handleShare = async () => {
@@ -32,6 +36,44 @@ export default function ShareScreen({ route }) {
     }
   };
 
+  const handleDelete = () => {
+    Alert.alert(
+      "Delete Photostrip",
+      "Are you sure you want to delete this photostrip? This cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // Delete from Firestore
+              await deleteDoc(doc(firebase_db, "photostrips", strip.id));
+
+              // Delete from Firebase Storage
+              const storageRef = strip.storagePath
+                ? ref(firebase_storage, strip.storagePath)
+                : ref(
+                    firebase_storage,
+                    decodeURIComponent(strip.url.split("/o/")[1].split("?")[0]),
+                  );
+              await deleteObject(storageRef);
+
+              // Go back to gallery
+              navigation.goBack();
+            } catch (error) {
+              console.error("Delete failed:", error);
+              Alert.alert(
+                "Error",
+                "Failed to delete photostrip. Please try again.",
+              );
+            }
+          },
+        },
+      ],
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Image
@@ -39,9 +81,14 @@ export default function ShareScreen({ route }) {
         style={styles.stripImage}
         resizeMode="contain"
       />
-      <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-        <Text style={styles.shareButtonText}>Share</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+          <Text style={styles.deleteButtonText}>Delete</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
+          <Text style={styles.shareButtonText}>Share</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -61,15 +108,34 @@ const styles = StyleSheet.create({
     height: STRIP_HEIGHT,
   },
 
+  buttonRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+
   shareButton: {
     backgroundColor: "black",
     paddingVertical: 16,
-    paddingHorizontal: 48,
+    paddingHorizontal: 32,
     borderRadius: 30,
   },
 
   shareButtonText: {
     color: "white",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
+  deleteButton: {
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: "rgb(255, 255, 255)",
+  },
+
+  deleteButtonText: {
+    color: "rgb(255, 255, 255)",
     fontSize: 16,
     fontWeight: "600",
   },
