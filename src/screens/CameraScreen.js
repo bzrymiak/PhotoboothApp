@@ -23,11 +23,16 @@ export default function CameraScreen({ navigation }) {
   const [counter, setCounter] = useState(3); // photo preview timer
 
   const cameraRef = useRef(null);
-  // const { addPhoto } = usePhotos();
-  // const { photos } = usePhotos();
+  const isFocused = useIsFocused(); // check if user is on the page
 
-  // check if user is on the page
-  const isFocused = useIsFocused();
+  // navigate away when all 3 photos have been taken
+  useEffect(() => {
+    if (photos.length === 3) {
+      const snapshot = [...photos];
+      setPhotos([]); // reset for next strip
+      navigation.navigate("Add a Caption", { photos: snapshot });
+    }
+  }, [photos]);
 
   // timer function for the photo preview
   function timer() {
@@ -77,12 +82,6 @@ export default function CameraScreen({ navigation }) {
     const base64Image = `data:image/jpg;base64,${previewPhoto.base64}`;
     const updatedPhotos = [...photos, base64Image];
     setPhotos(updatedPhotos);
-
-    // Once we have 3 photos, pass them to PhotostripScreen via nav params
-    if (updatedPhotos.length === 3) {
-      navigation.navigate("Add a Caption", { photos: updatedPhotos }); //navigate to edit screen
-      setPhotos([]); // reset for next strip
-    }
   }
 
   // Save to device camera roll
