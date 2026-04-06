@@ -106,6 +106,18 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
 
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "white",
+  },
+
+  emptySubText: {
+    fontWeight: 600,
+  },
+
   grid: {
     padding: 16,
     paddingBottom: 12,

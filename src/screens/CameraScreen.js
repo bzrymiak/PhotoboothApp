@@ -44,8 +44,7 @@ export default function CameraScreen({ navigation }) {
   }
 
   // make sure camera permission is granted
-  if (!permission) return <View />;
-  if (!permission.granted) {
+  if (!permission || !permission.granted) {
     return (
       <View style={styles.screenContainer}>
         <Text style={{ textAlign: "center", marginBottom: 20 }}>

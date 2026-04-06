@@ -11,6 +11,9 @@ import GalleryPhotoStack from "../navigation/GalleryStack";
 import ProfileScreen from "../screens/ProfileScreen";
 import EditProfileScreen from "../screens/EditProfileScreen";
 
+// import icons
+import { Ionicons } from "@expo/vector-icons";
+
 const Tab = createBottomTabNavigator();
 const ProfileStack = createNativeStackNavigator();
 
@@ -37,17 +40,47 @@ export default function ProtectedAreaScreen() {
       <Tab.Screen
         name="ProfileTab"
         component={ProfileStackScreen}
-        options={{ headerShown: false, title: "Profile" }}
+        options={{
+          headerShown: false,
+          title: "Profile",
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              size={18}
+              name="person"
+              color={focused ? "#007AFF" : "#A7ABB1"}
+            />
+          ),
+        }}
       />
       <Tab.Screen
         name="CameraTab"
         component={CameraEditStack}
-        options={{ headerShown: false, title: "Camera" }}
+        options={{
+          headerShown: false,
+          title: "Camera",
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              size={20}
+              name="camera"
+              color={focused ? "#007AFF" : "#A7ABB1"}
+            />
+          ),
+        }}
       />
       <Tab.Screen
         name="GalleryTab"
         component={GalleryPhotoStack}
-        options={{ headerShown: false, title: "Gallery" }}
+        options={{
+          headerShown: false,
+          title: "Gallery",
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              size={20}
+              name="image"
+              color={focused ? "#007AFF" : "#A7ABB1"}
+            />
+          ),
+        }}
       />
     </Tab.Navigator>
   );
