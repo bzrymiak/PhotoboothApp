@@ -6,52 +6,63 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { doc, getDoc } from "firebase/firestore";
 import { firebase_db, firebase_auth } from "../firebaseConfig";
 
 export default function ProfileScreen({ navigation }) {
-  const [name, setName] = useState("User Name");
-  const [bio, setBio] = useState("Bio");
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
   const [profileImage, setProfileImage] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
+  const [bgColor, setBgColor] = useState("#ffffff");
 
+  // reload profile data 
   useFocusEffect(
     useCallback(() => {
       const loadProfile = async () => {
         const uid = firebase_auth.currentUser?.uid;
         if (!uid) return;
 
+        // fetch profile data from firestore
         const snap = await getDoc(doc(firebase_db, "users", uid));
         if (snap.exists()) {
           const data = snap.data();
           if (data.name) setName(data.name);
           if (data.bio) setBio(data.bio);
           if (data.profileImage) setProfileImage(data.profileImage);
+          if (data.coverImage) setCoverImage(data.coverImage);
         }
+
+        // load saved background colour from AsyncStorage
+        const storedColor = await AsyncStorage.getItem("profileBgColor");
+        if (storedColor) setBgColor(storedColor);
       };
 
       loadProfile();
     }, [])
   );
 
-  const pickImage = async (type) => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.Images,
-      allowsEditing: true,
-      aspect: type === "profile" ? [1, 1] : [16, 9],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      type === "profile" ? setProfileImage(uri) : setCoverImage(uri);
-    }
-  };
-
   return (
-   <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: bgColor }]}>
+
+      <View style={styles.iconRow}>
+        <TouchableOpacity
+          style={styles.iconBtn}
+          onPress={() =>
+            navigation.navigate("EditProfileScreen", {
+              name,
+              bio,
+              profileImage,
+              coverImage,
+            })
+          }
+        >
+          <Image source={require("../../assets/edit.png")} style={styles.icon} />
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.profileWrapper}>
         {profileImage ? (
           <Image source={{ uri: profileImage }} style={styles.profileImage} />
@@ -61,64 +72,68 @@ export default function ProfileScreen({ navigation }) {
       </View>
 
       <View style={styles.info}>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.bio}>{bio}</Text>
-
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={styles.editBtn}
-            onPress={() =>
-              navigation.navigate("EditProfileScreen", {
-                name,
-                bio,
-                profileImage,
-                coverImage,
-              })
-            }
-          >
-            <Text>Edit Profile</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.settingsBtn}>
-            <Text style={{ color: "#fff" }}>Settings</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.name}>{name || "User Name"}</Text>
+        <Text style={styles.bio}>{bio || "Bio"}</Text>
       </View>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  cover: { width: "100%", height: 220 },
-  profileWrapper: {
+  container: {
+    flex: 1,
+    alignItems: "center",
+    paddingTop: 60,
+  },
+  iconRow: {
     position: "absolute",
-    top: 160,
-    left: 20,
-    borderWidth: 5,
-    borderColor: "#fff",
+    top: 50,
+    right: 20,
+    flexDirection: "row",
+  },
+  iconBtn: {
+    padding: 8,
+    marginLeft: 8,
+  },
+  icon: {
+    width: 28,
+    height: 28,
+  },
+  profileWrapper: {
+    marginTop: 50,
     borderRadius: 100,
   },
-
-  profileImage: { width: 120, height: 120, borderRadius: 60 },
-  profilePlaceholder: { width: 120, height: 120, borderRadius: 60, backgroundColor: "#bbb" },
-  info: { marginTop: 80, paddingHorizontal: 20 },
-  name: { fontSize: 40, fontWeight: "bold" },
-  bio: { fontSize: 18, marginTop: 10, color: "#555" },
-  buttonRow: { flexDirection: "row", marginTop: 20 },
-  editBtn: {
-    backgroundColor: "#e5e5e5",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    marginRight: 10,
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 100,
+    color: "#fff",
   },
-
-
-  settingsBtn: {
-    backgroundColor: "#000",
-    paddingVertical: 12,
+  profilePlaceholder: {
+    width: 110,
+    height: 110,
+    borderRadius: 100,
+    backgroundColor: "#ccc",
+    borderWidth: 6,
+    borderColor: "#fff",
+    marginBottom: -20,
+  },
+  info: {
+    alignItems: "center",
+    marginTop: 24,
     paddingHorizontal: 20,
-    borderRadius: 12,
+  },
+  name: {
+    fontSize: 32,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: 8,
+  },
+  bio: {
+    fontSize: 16,
+    marginTop: 8,
+    color: "#555",
+    textAlign: "center",
   },
 });

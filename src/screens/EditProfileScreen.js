@@ -9,10 +9,22 @@ import {
   ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebase_db, firebase_storage, firebase_auth } from "../firebaseConfig";
 
+// background colour options
+const BG_COLORS = [
+  "#FFFFFF",
+  "#FFE5D4",
+  "#FBD5FF",
+  "#DFEFFF",
+  "#EBFFDF",
+  "#FFDFE6",
+];
+
+// uploads a local image URI to Firebase Storage and returns the download URL
 async function uploadImage(uri, path) {
   const response = await fetch(uri);
   const blob = await response.blob();
@@ -22,6 +34,7 @@ async function uploadImage(uri, path) {
 }
 
 export default function EditProfileScreen({ route, navigation }) {
+  // receive current profile data form the profile screen
   const {
     name: initialName,
     bio: initialBio,
@@ -29,30 +42,35 @@ export default function EditProfileScreen({ route, navigation }) {
     coverImage: initialCover,
   } = route.params;
 
-  const [name, setName] = useState(initialName);
-  const [bio, setBio] = useState(initialBio);
+  const [name, setName] = useState(initialName ?? "");
+  const [bio, setBio] = useState(initialBio ?? "");
   const [profileImage, setProfileImage] = useState(initialProfile);
   const [coverImage, setCoverImage] = useState(initialCover);
   const [saving, setSaving] = useState(false);
+  const [bgColor, setBgColor] = useState("#ffffff");
 
+  // request photo permissions 
   useEffect(() => {
     (async () => {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") alert("Permission required to access photos");
+
+      const storedColor = await AsyncStorage.getItem("profileBgColor");
+      if (storedColor) setBgColor(storedColor);
     })();
   }, []);
 
-  const pickImage = async (type) => {
+  // open the image picker and update profile img
+  const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.Images,
       allowsEditing: true,
-      aspect: type === "profile" ? [1, 1] : [16, 9],
+      aspect: [1, 1],
       quality: 1,
     });
 
     if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      type === "profile" ? setProfileImage(uri) : setCoverImage(uri);
+      setProfileImage(result.assets[0].uri);
     }
   };
 
@@ -63,21 +81,20 @@ export default function EditProfileScreen({ route, navigation }) {
     setSaving(true);
     try {
       let profileImageUrl = profileImage;
-      let coverImageUrl = coverImage;
 
       if (profileImage && !profileImage.startsWith("https://")) {
         profileImageUrl = await uploadImage(profileImage, `users/${uid}/profile.jpg`);
-      }
-      if (coverImage && !coverImage.startsWith("https://")) {
-        coverImageUrl = await uploadImage(coverImage, `users/${uid}/cover.jpg`);
       }
 
       await setDoc(doc(firebase_db, "users", uid), {
         name,
         bio,
         profileImage: profileImageUrl ?? null,
-        coverImage: coverImageUrl ?? null,
+        coverImage: coverImage ?? null,
       });
+
+      // save background colour locally
+      await AsyncStorage.setItem("profileBgColor", bgColor);
 
       navigation.goBack();
     } catch (e) {
@@ -88,105 +105,202 @@ export default function EditProfileScreen({ route, navigation }) {
     }
   };
 
+  // clear profile images from Firestore and reset local state
   const clearProfile = async () => {
     const uid = firebase_auth.currentUser?.uid;
     if (!uid) return;
 
     await setDoc(doc(firebase_db, "users", uid), {
-      name: "",
-      bio: "",
       profileImage: null,
       coverImage: null,
     });
+
+    // clear background colour from AsyncStorage
+    await AsyncStorage.removeItem("profileBgColor");
 
     setName("");
     setBio("");
     setProfileImage(null);
     setCoverImage(null);
+    setBgColor("#ffffff");
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => pickImage("cover")}>
-        {coverImage ? (
-          <Image source={{ uri: coverImage }} style={styles.cover} />
-        ) : (
-          <View style={styles.coverPlaceholder} />
-        )}
-      </TouchableOpacity>
+    <View style={[styles.container, { backgroundColor: bgColor }]}>
 
-      <TouchableOpacity
-        style={styles.profileWrapper}
-        onPress={() => pickImage("profile")}
-      >
-        {profileImage ? (
-          <Image source={{ uri: profileImage }} style={styles.profileImage} />
-        ) : (
-          <View style={styles.profilePlaceholder} />
-        )}
-      </TouchableOpacity>
+      <View style={styles.avatarSection}>
+        <View style={styles.avatarWrapper}>
+          {profileImage ? (
+            <Image source={{ uri: profileImage }} style={styles.profileImage} />
+          ) : (
+            <View style={styles.profilePlaceholder} />
+          )}
+        </View>
+        <TouchableOpacity style={styles.editBtn} onPress={pickImage}>
+          <Text style={styles.editBtnText}>Edit</Text>
+        </TouchableOpacity>
+      </View>
 
-      <TextInput
-        style={styles.input}
-        value={name}
-        onChangeText={setName}
-        placeholder="Name"
-      />
+      {/* Name input */}
+      <View style={styles.fieldSection}>
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          placeholder="Enter your user name"
+        />
+      </View>
 
-      <TextInput
-        style={styles.input}
-        value={bio}
-        onChangeText={setBio}
-        placeholder="Bio"
-      />
+      {/* Bio input */}
+      <View style={styles.fieldSection}>
+        <TextInput
+          style={styles.input}
+          value={bio}
+          onChangeText={setBio}
+          placeholder="Enter your bio"
+        />
+      </View>
 
-      <TouchableOpacity style={styles.saveBtn} onPress={saveProfile} disabled={saving}>
-        {saving ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={{ color: "#fff" }}>Save</Text>
-        )}
-      </TouchableOpacity>
+      {/* Background colour picker */}
+      <View style={styles.fieldSection}>
+        <Text style={styles.label}>Background colour</Text>
+        <View style={styles.colorRow}>
+          {BG_COLORS.map((color) => (
+            <TouchableOpacity
+              key={color}
+              onPress={() => setBgColor(color)}
+              style={[
+                styles.colorCircle,
+                { backgroundColor: color },
+                bgColor === color && styles.colorCircleSelected,
+              ]}
+            />
+          ))}
+        </View>
+      </View>
 
-      <TouchableOpacity style={styles.clearBtn} onPress={clearProfile}>
-        <Text style={{ color: "#fff" }}>Clear Profile</Text>
-      </TouchableOpacity>
+      {/* Done and Clear buttons */}
+      <View style={styles.buttonRow}>
+        <TouchableOpacity
+          style={styles.doneBtn}
+          onPress={saveProfile}
+          disabled={saving}
+        >
+          {saving ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.doneBtnText}>Done</Text>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.clearBtn} onPress={clearProfile}>
+          <Text style={styles.clearBtnText}>Clear history</Text>
+        </TouchableOpacity>
+      </View>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  cover: { width: "100%", height: 180 },
-  coverPlaceholder: { width: "100%", height: 180, backgroundColor: "#ddd" },
-  profileWrapper: {
-    position: "absolute",
-    top: 140,
-    left: 30,
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 60,
+  },
+  avatarSection: {
+    alignItems: "center",
+    marginBottom: 30,
+  },
+  avatarWrapper: {
+    marginBottom: 12,
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     borderWidth: 4,
     borderColor: "#fff",
-    borderRadius: 100,
   },
-  profileImage: { width: 100, height: 100, borderRadius: 50 },
-  profilePlaceholder: { width: 100, height: 100, borderRadius: 50, backgroundColor: "#bbb" },
-  input: {
-    marginTop: 80,
-    borderBottomWidth: 1,
-    padding: 10,
-    fontSize: 16,
+  profilePlaceholder: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: "#ccc",
+    borderWidth: 4,
+    borderColor: "#fff",
   },
-  saveBtn: {
-    marginTop: 30,
+  editBtn: {
     backgroundColor: "#000",
-    padding: 15,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  editBtnText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  fieldSection: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginBottom: 12,
+    marginTop: 24,
+  },
+  input: {
+    backgroundColor: "#e8e8e8",
+    borderRadius: 10,
+    padding: 14,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    height: 56,
+  },
+  colorRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 8,
+  },
+  colorCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1.5,
+    borderColor: "#999",
+  },
+  colorCircleSelected: {
+    borderWidth: 2,
+    borderColor: "#999",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 50,
+  },
+  doneBtn: {
+    flex: 1,
+    backgroundColor: "#000",
+    padding: 16,
     borderRadius: 10,
     alignItems: "center",
+  },
+  doneBtnText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "500",
   },
   clearBtn: {
-    marginTop: 15,
-    backgroundColor: "#ff3b30",
-    padding: 15,
+    flex: 1,
+    backgroundColor: "#cc0000",
+    padding: 16,
     borderRadius: 10,
     alignItems: "center",
+  },
+  clearBtnText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "500",
   },
 });
