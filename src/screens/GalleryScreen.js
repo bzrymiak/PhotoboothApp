@@ -102,12 +102,29 @@ export default function GalleryScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#550d32",
+    // backgroundColor: "#550d32",
+    backgroundColor: "white",
+  },
+
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "white",
+  },
+
+  emptySubText: {
+    fontWeight: 600,
   },
 
   grid: {
     padding: 16,
     paddingBottom: 12,
+    shadowColor: "grey",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
   },
 
   row: {
