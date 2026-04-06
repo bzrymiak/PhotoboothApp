@@ -14,8 +14,17 @@ import { doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebase_db, firebase_storage, firebase_auth } from "../firebaseConfig";
 
-const BG_COLORS = ["#ffffff", "#FFE5D0", "#EDD6F5", "#D6EAFF", "#D6F5D6", "#FFD6E7"];
+// background colour options
+const BG_COLORS = [
+  "#FFFFFF",
+  "#FFE5D4",
+  "#FBD5FF",
+  "#DFEFFF",
+  "#EBFFDF",
+  "#FFDFE6",
+];
 
+// uploads a local image URI to Firebase Storage and returns the download URL
 async function uploadImage(uri, path) {
   const response = await fetch(uri);
   const blob = await response.blob();
@@ -25,6 +34,7 @@ async function uploadImage(uri, path) {
 }
 
 export default function EditProfileScreen({ route, navigation }) {
+  // receive current profile data form the profile screen
   const {
     name: initialName,
     bio: initialBio,
@@ -39,6 +49,7 @@ export default function EditProfileScreen({ route, navigation }) {
   const [saving, setSaving] = useState(false);
   const [bgColor, setBgColor] = useState("#ffffff");
 
+  // request photo permissions 
   useEffect(() => {
     (async () => {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -49,6 +60,7 @@ export default function EditProfileScreen({ route, navigation }) {
     })();
   }, []);
 
+  // open the image picker and update profile img
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.Images,
@@ -81,6 +93,7 @@ export default function EditProfileScreen({ route, navigation }) {
         coverImage: coverImage ?? null,
       });
 
+      // save background colour locally
       await AsyncStorage.setItem("profileBgColor", bgColor);
 
       navigation.goBack();
@@ -92,17 +105,17 @@ export default function EditProfileScreen({ route, navigation }) {
     }
   };
 
+  // clear profile images from Firestore and reset local state
   const clearProfile = async () => {
     const uid = firebase_auth.currentUser?.uid;
     if (!uid) return;
 
     await setDoc(doc(firebase_db, "users", uid), {
-      // name: "",
-      // bio: "",
       profileImage: null,
       coverImage: null,
     });
 
+    // clear background colour from AsyncStorage
     await AsyncStorage.removeItem("profileBgColor");
 
     setName("");
@@ -115,7 +128,6 @@ export default function EditProfileScreen({ route, navigation }) {
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
 
-      {/* Profile picture */}
       <View style={styles.avatarSection}>
         <View style={styles.avatarWrapper}>
           {profileImage ? (
@@ -167,6 +179,7 @@ export default function EditProfileScreen({ route, navigation }) {
         </View>
       </View>
 
+      {/* Done and Clear buttons */}
       <View style={styles.buttonRow}>
         <TouchableOpacity
           style={styles.doneBtn}
@@ -258,8 +271,8 @@ const styles = StyleSheet.create({
     borderColor: "#999",
   },
   colorCircleSelected: {
-    borderWidth: 3,
-    borderColor: "#000",
+    borderWidth: 2,
+    borderColor: "#999",
   },
   buttonRow: {
     flexDirection: "row",

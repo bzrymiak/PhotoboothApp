@@ -18,12 +18,14 @@ export default function ProfileScreen({ navigation }) {
   const [coverImage, setCoverImage] = useState(null);
   const [bgColor, setBgColor] = useState("#ffffff");
 
+  // reload profile data 
   useFocusEffect(
     useCallback(() => {
       const loadProfile = async () => {
         const uid = firebase_auth.currentUser?.uid;
         if (!uid) return;
 
+        // fetch profile data from firestore
         const snap = await getDoc(doc(firebase_db, "users", uid));
         if (snap.exists()) {
           const data = snap.data();
@@ -33,6 +35,7 @@ export default function ProfileScreen({ navigation }) {
           if (data.coverImage) setCoverImage(data.coverImage);
         }
 
+        // load saved background colour from AsyncStorage
         const storedColor = await AsyncStorage.getItem("profileBgColor");
         if (storedColor) setBgColor(storedColor);
       };
