@@ -252,10 +252,11 @@ const styles = StyleSheet.create({
 
   captionText: {
     fontFamily: "AmaticSC_700Bold",
-    fontSize: 24,
+    fontSize: 20,
     color: "black",
     textAlign: "center",
-    paddingBottom: 20,
+    paddingBottom: 28,
+    width: 212,
   },
 
   photo: {
