@@ -204,11 +204,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 60,
+    paddingTop: 28,
   },
   avatarSection: {
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 20,
   },
   avatarWrapper: {
     marginBottom: 12,
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
   },
   buttonColumn: {
     gap: 8,
-    marginTop: 10,
+    marginTop: 24,
     alignItems: "center",
   },
   doneBtn: {

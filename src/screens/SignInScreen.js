@@ -65,55 +65,62 @@ export default function SignInScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.title}>
-        <Text style={styles.header}>Let's Get Started</Text>
-        <Text style={styles.description}>Sign In or Sign Up!</Text>
-      </View>
-      <View style={styles.userInfo}>
-        {/* Email Input */}
-        <View style={styles.infoSection}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            keyboardType="email-address" // optimizes keyboard for email entry (@ symbol)
-            value={email}
-            onChangeText={setEmail} // updates state on every keystroke
-            autoCapitalize="none" // important! Prevents auto-capitalizing the first letter of emails
-          />
+      <Image
+        source={require("../../assets/Snappy.png")}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+      <View style={styles.content}>
+        <View style={styles.title}>
+          <Text style={styles.header}>Let's Get Started</Text>
+          <Text style={styles.description}>Sign In or Sign Up!</Text>
         </View>
-        {/* Password Input */}
-        <View style={styles.infoSection}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            secureTextEntry={true} // hides text for security (dots/asterisks)
-            value={password}
-            onChangeText={setPassword}
-          />
-        </View>
+        <View style={styles.userInfo}>
+          {/* Email Input */}
+          <View style={styles.infoSection}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              keyboardType="email-address" // optimizes keyboard for email entry (@ symbol)
+              value={email}
+              onChangeText={setEmail} // updates state on every keystroke
+              autoCapitalize="none" // important! Prevents auto-capitalizing the first letter of emails
+            />
+          </View>
+          {/* Password Input */}
+          <View style={styles.infoSection}>
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              secureTextEntry={true} // hides text for security (dots/asterisks)
+              value={password}
+              onChangeText={setPassword}
+            />
+          </View>
 
-        <View style={styles.buttonContainer}>
-          //sign in button
-          <Pressable
-            onPress={handleSignIn}
-            style={({ pressed }) => [
-              { backgroundColor: pressed ? "black" : "#202020" },
-              styles.signInContainer,
-            ]}
-          >
-            <Text style={styles.signInText}>Sign In</Text>
-          </Pressable>
-          <Pressable
-            onPress={handleSignUp}
-            style={({ pressed }) => [
-              { backgroundColor: pressed ? "#ccc" : "#ffffff" },
-              styles.signUpContainer,
-            ]}
-          >
-            <Text style={styles.signUpText}>Sign Up</Text>
-          </Pressable>
+          <View style={styles.buttonContainer}>
+            {/*sign in button*/}
+            <Pressable
+              onPress={handleSignIn}
+              style={({ pressed }) => [
+                { backgroundColor: pressed ? "black" : "#202020" },
+                styles.signInContainer,
+              ]}
+            >
+              <Text style={styles.signInText}>Sign In</Text>
+            </Pressable>
+            <Pressable
+              onPress={handleSignUp}
+              style={({ pressed }) => [
+                { backgroundColor: pressed ? "#ccc" : "#ffffff" },
+                styles.signUpContainer,
+              ]}
+            >
+              <Text style={styles.signUpText}>Sign Up</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </View>
@@ -124,9 +131,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 32,
-    paddingTop: 130, // all content appears above the keyboard
+    paddingTop: 60, // all content appears above the keyboard
     backgroundColor: "white",
+  },
+
+  content: {
     gap: 48,
+  },
+
+  logo: {
+    width: 120,
+    height: 120,
+    alignSelf: "center",
   },
 
   title: {
@@ -206,34 +222,4 @@ const styles = StyleSheet.create({
   buttonContainer: {
     gap: 0,
   },
-
-  // footer: {
-  //   marginTop: 20,
-  //   textAlign: "center",
-  //   color: "#888",
-  // },
-  // line: {
-  //   borderBottomWidth: StyleSheet.hairlineWidth,
-  //   marginTop: 50,
-  //   marginBottom: 10,
-  //   color: "#9A9A9A",
-  // },
-  // smallText: {
-  //   textAlign: "center",
-  //   alignSelf: "center",
-  //   marginBottom: -8,
-  //   color: "#9A9A9A",
-  //   backgroundColor: "white",
-  //   width: 40,
-  // },
-  // googleIcon: {
-  //   width: 28,
-  //   height: 28,
-  // },
-  // inlineButton: {
-  //   display: "flex",
-  //   flexDirection: "row",
-  //   alignItems: "center",
-  //   gap: 16,
-  // },
 });
