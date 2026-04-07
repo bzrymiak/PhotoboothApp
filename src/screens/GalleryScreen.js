@@ -114,7 +114,7 @@ export default function GalleryScreen({ navigation }) {
           })
         }
       >
-        <Text style={styles.editBtnText}>Edit</Text>
+        <Text style={styles.editBtnText}>Settings</Text>
       </TouchableOpacity>
     </View>
   );
