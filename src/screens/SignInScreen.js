@@ -13,9 +13,6 @@ import {
   Image,
 } from "react-native";
 import { firebase_auth } from "../firebaseConfig";
-import * as WebBrowser from "expo-web-browser";
-
-WebBrowser.maybeCompleteAuthSession(); // this might be from the old google sign in stuff?
 
 export default function SignInScreen() {
   // track email and password inputs.
@@ -43,7 +40,7 @@ export default function SignInScreen() {
       // the onAuthStateChanged listener in App.js will detect this and navigate.
     } catch (error) {
       console.log(error.message);
-      alert(error.message);
+      alert("You already have an account - Please sign in instead!");
     }
   }
 
@@ -59,7 +56,7 @@ export default function SignInScreen() {
       // note: Similar to sign up, a success here triggers App.js to switch screens automatically.
     } catch (error) {
       console.log(error.message);
-      alert(error.message);
+      alert("You don't have an account yet - Please sign up instead :)");
     }
   }
 
