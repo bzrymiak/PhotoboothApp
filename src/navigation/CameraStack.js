@@ -10,9 +10,9 @@ const Stack = createNativeStackNavigator();
 export default function CameraEditStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Camera" component={CameraScreen} />
+      <Stack.Screen name="Take 3 Photos!" component={CameraScreen} />
       <Stack.Screen name="Add a Caption" component={EditScreen} />
-      <Stack.Screen name="Photostrip" component={PhotostripScreen} />
+      <Stack.Screen name="Pick a Colour" component={PhotostripScreen} />
     </Stack.Navigator>
   );
 }

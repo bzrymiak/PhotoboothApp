@@ -118,7 +118,7 @@ export default function EditScreen({ route, navigation }) {
   }
 
   const handleNext = () => {
-    navigation.navigate("Photostrip", { photos, caption, selectedFont });
+    navigation.navigate("Pick a Colour", { photos, caption, selectedFont });
   };
 
   return (

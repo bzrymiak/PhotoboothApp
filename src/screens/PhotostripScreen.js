@@ -64,9 +64,10 @@ export default function PhotostripScreen({ route, navigation }) {
       setSaved(true);
       navigation.reset({
         index: 0,
-        routes: [{ name: "Camera" }],
+        routes: [{ name: "Take 3 Photos!" }],
       }); //reset camera stack back to cameraScreen
       navigation.getParent().navigate("GalleryTab", { screen: "Gallery" }); //navigate to gallery after saved successfully
+    } catch (error) {
       console.error("Snapshot failed: ", error);
     } finally {
       setSaving(false);

@@ -96,7 +96,7 @@ export default function ShareScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#550d32",
+    backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
     paddingTop: 0,
@@ -106,6 +106,11 @@ const styles = StyleSheet.create({
   stripImage: {
     width: STRIP_WIDTH,
     height: STRIP_HEIGHT,
+    shadowColor: "#ccc",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    padding: 10,
   },
 
   buttonRow: {
@@ -131,11 +136,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 30,
     borderWidth: 1,
-    borderColor: "rgb(255, 255, 255)",
+    borderColor: "black",
   },
 
   deleteButtonText: {
-    color: "rgb(255, 255, 255)",
+    color: "black",
     fontSize: 16,
     fontWeight: "600",
   },
