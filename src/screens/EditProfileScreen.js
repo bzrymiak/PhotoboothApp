@@ -224,9 +224,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "#ccc",
-    borderWidth: 4,
-    borderColor: "#fff",
+    backgroundColor: "#ffffff",
   },
   editBtn: {
     backgroundColor: "#000",

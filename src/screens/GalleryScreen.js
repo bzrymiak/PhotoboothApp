@@ -124,15 +124,6 @@ export default function GalleryScreen({ navigation }) {
     );
   }
 
-  if (strips.length === 0) {
-    return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>No strips yet.</Text>
-        <Text style={styles.emptySubText}>Save your first photostrip!</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
       <FlatList
@@ -144,8 +135,12 @@ export default function GalleryScreen({ navigation }) {
         columnWrapperStyle={styles.row}
         ListEmptyComponent={
           <View style={styles.emptyInline}>
-            <Text style={styles.emptyText}>No strips yet.</Text>
-            <Text style={styles.emptySubText}>Save your first photostrip!</Text>
+            <Text style={styles.emptyText}>
+              You don't have any strips yet :(
+            </Text>
+            <Text style={styles.emptySubText}>
+              Go save your first photostrip!
+            </Text>
           </View>
         }
         renderItem={({ item }) => (
@@ -205,7 +200,7 @@ const styles = StyleSheet.create({
     width: 110,
     height: 110,
     borderRadius: 100,
-    backgroundColor: "#e5e5e5",
+    backgroundColor: "#ffffff",
   },
   info: {
     alignItems: "center",
@@ -232,16 +227,19 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "white",
+  emptyInline: {
+    marginTop: 40,
+    gap: 8,
+  },
+
+  emptyText: {
+    fontWeight: 500,
+    textAlign: "center",
   },
 
   emptySubText: {
-    fontWeight: 600,
+    fontWeight: 500,
+    textAlign: "center",
   },
 
   grid: {
