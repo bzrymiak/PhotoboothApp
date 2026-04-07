@@ -17,52 +17,28 @@ import { Ionicons } from "@expo/vector-icons";
 const Tab = createBottomTabNavigator();
 const ProfileStack = createNativeStackNavigator();
 
-function ProfileStackScreen() {
-  return (
-    <ProfileStack.Navigator>
-      <ProfileStack.Screen
-        name="ProfileScreen"
-        component={ProfileScreen}
-        options={{ headerShown: false }}
-      />
-      <ProfileStack.Screen
-        name="EditProfileScreen"
-        component={EditProfileScreen}
-        options={{ title: "Edit Profile" }}
-      />
-    </ProfileStack.Navigator>
-  );
-}
-
 export default function ProtectedAreaScreen() {
   return (
-    <Tab.Navigator>
-      <Tab.Screen
-        name="ProfileTab"
-        component={ProfileStackScreen}
-        options={{
-          headerShown: false,
-          title: "Profile",
-          tabBarIcon: ({ focused }) => (
-            <Ionicons
-              size={18}
-              name="person"
-              color={focused ? "#007AFF" : "#A7ABB1"}
-            />
-          ),
-        }}
-      />
+    <Tab.Navigator
+      screenOptions={{
+        tabBarStyle: {
+          paddingBottom: 8, // ← adjust bottom padding
+          paddingTop: 4, // ← adjust top padding
+          height: 70, // ← adjust overall height
+        },
+      }}
+    >
       <Tab.Screen
         name="CameraTab"
         component={CameraEditStack}
         options={{
           headerShown: false,
-          title: "Camera",
+          title: "",
           tabBarIcon: ({ focused }) => (
             <Ionicons
-              size={20}
+              size={32}
               name="camera"
-              color={focused ? "#007AFF" : "#A7ABB1"}
+              color={focused ? "black" : "#A7ABB1"}
             />
           ),
         }}
@@ -72,12 +48,12 @@ export default function ProtectedAreaScreen() {
         component={GalleryPhotoStack}
         options={{
           headerShown: false,
-          title: "Gallery",
+          title: "",
           tabBarIcon: ({ focused }) => (
             <Ionicons
-              size={20}
+              size={32}
               name="image"
-              color={focused ? "#007AFF" : "#A7ABB1"}
+              color={focused ? "black" : "#A7ABB1"}
             />
           ),
         }}

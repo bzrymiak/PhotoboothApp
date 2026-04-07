@@ -1,11 +1,5 @@
 import { useState, useCallback } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { doc, getDoc } from "firebase/firestore";
@@ -18,7 +12,7 @@ export default function ProfileScreen({ navigation }) {
   const [coverImage, setCoverImage] = useState(null);
   const [bgColor, setBgColor] = useState("#ffffff");
 
-  // reload profile data 
+  // reload profile data
   useFocusEffect(
     useCallback(() => {
       const loadProfile = async () => {
@@ -41,12 +35,11 @@ export default function ProfileScreen({ navigation }) {
       };
 
       loadProfile();
-    }, [])
+    }, []),
   );
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
-
       <View style={styles.iconRow}>
         <TouchableOpacity
           style={styles.iconBtn}
@@ -59,7 +52,10 @@ export default function ProfileScreen({ navigation }) {
             })
           }
         >
-          <Image source={require("../../assets/edit.png")} style={styles.icon} />
+          <Image
+            source={require("../../assets/edit.png")}
+            style={styles.icon}
+          />
         </TouchableOpacity>
       </View>
 
@@ -75,7 +71,6 @@ export default function ProfileScreen({ navigation }) {
         <Text style={styles.name}>{name || "User Name"}</Text>
         <Text style={styles.bio}>{bio || "Bio"}</Text>
       </View>
-
     </View>
   );
 }
@@ -133,7 +128,7 @@ const styles = StyleSheet.create({
   bio: {
     fontSize: 16,
     marginTop: 8,
-    color: "#555",
+    color: "black",
     textAlign: "center",
   },
 });

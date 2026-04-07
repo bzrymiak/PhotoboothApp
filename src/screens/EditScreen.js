@@ -11,8 +11,16 @@ import {
   Platform,
   Keyboard,
 } from "react-native";
-import { useState, useLayoutEffect, useEffect } from "react";
+import {
+  useState,
+  useLayoutEffect,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 import * as Font from "expo-font";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 
 const NUM_COLUMNS = 1;
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -42,10 +50,22 @@ export default function EditScreen({ route, navigation }) {
   const [loadedFonts, setLoadedFonts] = useState({});
   const [selectedFont, setSelectedFont] = useState(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [bgColor, setBgColor] = useState("#ffffff");
 
   useLayoutEffect(() => {
     navigation.setOptions({ headerBackTitle: "Back" });
   }, [navigation]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadColor = async () => {
+        const storedColor = await AsyncStorage.getItem("profileBgColor");
+        if (storedColor) setBgColor(storedColor);
+      };
+
+      loadColor();
+    }, []),
+  );
 
   useEffect(() => {
     fetchFonts();
@@ -118,12 +138,12 @@ export default function EditScreen({ route, navigation }) {
   }
 
   const handleNext = () => {
-    navigation.navigate("Photostrip", { photos, caption, selectedFont });
+    navigation.navigate("Pick a Colour", { photos, caption, selectedFont });
   };
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: bgColor }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={90}
     >
@@ -162,7 +182,7 @@ export default function EditScreen({ route, navigation }) {
       </View>
 
       {isFocused && fonts.length > 0 && (
-        <View style={[styles.fontPicker, { bottom: keyboardHeight - 74 }]}>
+        <View style={[styles.fontPicker, { bottom: keyboardHeight - 60 }]}>
           <FlatList
             data={fonts}
             keyExtractor={(item) => item.family}
@@ -296,17 +316,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     gap: 12,
-    paddingHorizontal: 80,
+    paddingHorizontal: 90,
   },
 
   actionButton: {
     flex: 1,
     backgroundColor: "white",
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderRadius: 30,
     alignItems: "center",
-    borderWidth: 1.5,
-    borderColor: "black",
+    borderWidth: 0.5,
+    borderColor: "#grey",
+    shadowColor: "#ccc",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
   },
 
   nextButton: {
@@ -315,7 +339,7 @@ const styles = StyleSheet.create({
 
   actionButtonText: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "500",
     color: "black",
   },
 

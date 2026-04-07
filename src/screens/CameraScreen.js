@@ -8,9 +8,12 @@ import {
   Button,
   TouchableOpacity,
   View,
+  Dimensions,
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 // import { usePhotos } from "../context/PhotoContext";
+
+const CROP_HEIGHT = 300;
 
 export default function CameraScreen({ navigation }) {
   const [facing, setFacing] = useState("back"); // handle camera orientation
@@ -64,6 +67,19 @@ export default function CameraScreen({ navigation }) {
     setFacing((current) => (current === "back" ? "front" : "back"));
 
   // Take a picture and show preview
+  // async function takePicture() {
+  //   if (cameraRef.current && isCameraReady) {
+  //     try {
+  //       const photo = await cameraRef.current.takePictureAsync({
+  //         base64: true,
+  //         quality: 0.5,
+  //       });
+  //       setPreviewPhoto(photo); // Show preview screen
+  //     } catch (error) {
+  //       console.log("Capture error: ", error);
+  //     }
+  //   }
+  // }
   async function takePicture() {
     if (cameraRef.current && isCameraReady) {
       try {
@@ -71,7 +87,8 @@ export default function CameraScreen({ navigation }) {
           base64: true,
           quality: 0.5,
         });
-        setPreviewPhoto(photo); // Show preview screen
+        const base64Image = `data:image/jpg;base64,${photo.base64}`;
+        setPhotos((prev) => [...prev, base64Image]);
       } catch (error) {
         console.log("Capture error: ", error);
       }
@@ -103,51 +120,41 @@ export default function CameraScreen({ navigation }) {
   }
 
   // preview screen --> only triggers after a photo is taken
-  if (previewPhoto) {
-    if (counter == 0) {
-      setPreviewPhoto(null);
-      saveToApp();
-    }
+  // if (previewPhoto) {
+  //   if (counter == 0) {
+  //     setPreviewPhoto(null);
+  //     saveToApp();
+  //   }
 
-    return (
-      <View style={styles.previewContainer}>
-        <Image
-          source={{ uri: previewPhoto.uri }}
-          style={StyleSheet.absoluteFill}
-          resizeMode="cover"
-        />
+  //   return (
+  //     <View style={styles.previewContainer}>
+  //       <Image
+  //         source={{ uri: previewPhoto.uri }}
+  //         style={StyleSheet.absoluteFill}
+  //         resizeMode="cover"
+  //       />
 
-        {/* Discard button top left */}
-        <TouchableOpacity style={styles.discardButton} onPress={discardPhoto}>
-          <Text style={styles.discardText}>✕</Text>
-        </TouchableOpacity>
+  //       <View style={styles.cropOverlay} pointerEvents="none">
+  //         <View style={styles.cropDimTop} />
+  //         <View style={styles.cropWindow} />
+  //         <View style={styles.cropDimBottom} />
+  //       </View>
 
-        {/* Bottom action buttons */}
-        <View style={styles.counterContainer}>
-          <Text style={styles.counterText}>Preview ends in {counter}...</Text>
-        </View>
+  //       {/* Bottom action buttons */}
+  //       {/* <View style={styles.counterContainer}>
+  //         <Text style={styles.counterText}>Preview ends in {counter}...</Text>
+  //       </View> */}
 
-        <View style={styles.previewActions}>
-          <View style={styles.photoButton}>
-            <Text style={styles.photoCounterText}>
-              Photos: {photos.length + 1} / 3
-            </Text>
-          </View>
-
-          {/* <TouchableOpacity style={styles.actionButton} onPress={saveToApp}>
-            <Text style={styles.actionButtonText}>Save to App</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.actionButton, styles.localButton]}
-            onPress={saveLocally}
-          >
-            <Text style={styles.actionButtonText}>Save to Phone</Text>
-          </TouchableOpacity> */}
-        </View>
-      </View>
-    );
-  }
+  //       <View style={styles.previewActions}>
+  //         <View style={styles.photoButton}>
+  //           <Text style={styles.photoCounterText}>
+  //             Photos: {photos.length + 1} / 3
+  //           </Text>
+  //         </View>
+  //       </View>
+  //     </View>
+  //   );
+  // }
 
   // MAIN CAMERA RENDERING
   return (
@@ -160,6 +167,19 @@ export default function CameraScreen({ navigation }) {
           ref={cameraRef}
           onCameraReady={() => setIsCameraReady(true)}
         />
+
+        {/* <View style={styles.counterContainer}>
+          <Text style={styles.counterText}>{counter}</Text>
+        </View> */}
+        <View style={styles.photoButton}>
+          <Text style={styles.photoCounterText}>{photos.length + 1} / 3</Text>
+        </View>
+
+        <View style={styles.cropOverlay} pointerEvents="none">
+          <View style={styles.cropDimTop} />
+          <View style={styles.cropWindow} />
+          <View style={styles.cropDimBottom} />
+        </View>
 
         {/* Bottom controls */}
         <View style={styles.cameraOverlay}>
@@ -201,19 +221,6 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
 
-  discardButton: {
-    position: "absolute",
-    top: 30,
-    left: 20,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 10,
-  },
-
   discardText: {
     color: "white",
     fontSize: 18,
@@ -249,32 +256,35 @@ const styles = StyleSheet.create({
   },
 
   photoButton: {
-    backgroundColor: "rgba(255,255,255,0.9)",
-    paddingVertical: 14,
+    position: "absolute",
+    top: 16,
+    alignSelf: "center",
+    backgroundColor: "rgba(255,255,255,0.2)",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderRadius: 30,
-    width: 120,
-    alignItems: "center",
+    zIndex: 20,
   },
 
   photoCounterText: {
     fontSize: 15,
-    fontWeight: "600",
-    color: "black",
+    fontWeight: "500",
+    color: "white",
   },
 
   counterContainer: {
     position: "absolute",
-    bottom: 100,
+    top: 16, // ← adjust to sit below the status bar
+    right: 180,
     width: "100%",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 16,
-    paddingHorizontal: 20,
+    alignItems: "center",
+    zIndex: 20,
   },
 
   counterText: {
     color: "white",
-    fontWeight: 600,
+    fontSize: 20,
+    fontWeight: 400,
   },
 
   // ── Camera styles ──
@@ -286,7 +296,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
     paddingHorizontal: 30,
-    paddingBottom: 30,
+    paddingBottom: 60,
     zIndex: 10,
   },
 
@@ -302,12 +312,12 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 4,
+    borderWidth: 3,
     borderColor: "white",
   },
 
   flipButton: {
-    backgroundColor: "rgba(255,255,255,0.5)",
+    backgroundColor: "rgba(255,255,255,0.25)",
     paddingVertical: "20%",
     paddingHorizontal: "20%",
     borderRadius: 35,
@@ -317,5 +327,25 @@ const styles = StyleSheet.create({
     tintColor: "white",
     width: 28,
     height: 28,
+  },
+
+  cropOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    flexDirection: "column",
+    overflow: "hidden",
+  },
+  cropDimTop: {
+    width: "100%",
+    flex: 1,
+    backgroundColor: "rgba(0,0,0)",
+  },
+  cropDimBottom: {
+    width: "100%",
+    flex: 1,
+    backgroundColor: "rgba(0,0,0)",
+  },
+
+  cropWindow: {
+    height: CROP_HEIGHT,
   },
 });

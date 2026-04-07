@@ -12,7 +12,12 @@ import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { firebase_db, firebase_storage, firebase_auth } from "../firebaseConfig";
+import { signOut } from "firebase/auth";
+import {
+  firebase_db,
+  firebase_storage,
+  firebase_auth,
+} from "../firebaseConfig";
 
 // background colour options
 const BG_COLORS = [
@@ -49,10 +54,21 @@ export default function EditProfileScreen({ route, navigation }) {
   const [saving, setSaving] = useState(false);
   const [bgColor, setBgColor] = useState("#ffffff");
 
-  // request photo permissions 
+  const handleLogout = async () => {
+    try {
+      await signOut(firebase_auth);
+      // No need to manually navigate if you're using onAuthStateChanged in App.js
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Failed to log out.");
+    }
+  };
+
+  // request photo permissions
   useEffect(() => {
     (async () => {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") alert("Permission required to access photos");
 
       const storedColor = await AsyncStorage.getItem("profileBgColor");
@@ -83,7 +99,10 @@ export default function EditProfileScreen({ route, navigation }) {
       let profileImageUrl = profileImage;
 
       if (profileImage && !profileImage.startsWith("https://")) {
-        profileImageUrl = await uploadImage(profileImage, `users/${uid}/profile.jpg`);
+        profileImageUrl = await uploadImage(
+          profileImage,
+          `users/${uid}/profile.jpg`,
+        );
       }
 
       await setDoc(doc(firebase_db, "users", uid), {
@@ -105,29 +124,8 @@ export default function EditProfileScreen({ route, navigation }) {
     }
   };
 
-  // clear profile images from Firestore and reset local state
-  const clearProfile = async () => {
-    const uid = firebase_auth.currentUser?.uid;
-    if (!uid) return;
-
-    await setDoc(doc(firebase_db, "users", uid), {
-      profileImage: null,
-      coverImage: null,
-    });
-
-    // clear background colour from AsyncStorage
-    await AsyncStorage.removeItem("profileBgColor");
-
-    setName("");
-    setBio("");
-    setProfileImage(null);
-    setCoverImage(null);
-    setBgColor("#ffffff");
-  };
-
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
-
       <View style={styles.avatarSection}>
         <View style={styles.avatarWrapper}>
           {profileImage ? (
@@ -143,22 +141,24 @@ export default function EditProfileScreen({ route, navigation }) {
 
       {/* Name input */}
       <View style={styles.fieldSection}>
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={setName}
-          placeholder="Enter your user name"
-        />
-      </View>
-
-      {/* Bio input */}
-      <View style={styles.fieldSection}>
-        <TextInput
-          style={styles.input}
-          value={bio}
-          onChangeText={setBio}
-          placeholder="Enter your bio"
-        />
+        <View>
+          <Text style={styles.label}>Nickname</Text>
+          <TextInput
+            style={styles.input}
+            value={name}
+            onChangeText={setName}
+            placeholder="give yourself a nickname!"
+          />
+        </View>
+        <View>
+          <Text style={styles.label}>Bio</Text>
+          <TextInput
+            style={styles.input}
+            value={bio}
+            onChangeText={setBio}
+            placeholder="write a short bio"
+          />
+        </View>
       </View>
 
       {/* Background colour picker */}
@@ -180,7 +180,7 @@ export default function EditProfileScreen({ route, navigation }) {
       </View>
 
       {/* Done and Clear buttons */}
-      <View style={styles.buttonRow}>
+      <View style={styles.buttonColumn}>
         <TouchableOpacity
           style={styles.doneBtn}
           onPress={saveProfile}
@@ -189,15 +189,13 @@ export default function EditProfileScreen({ route, navigation }) {
           {saving ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.doneBtnText}>Done</Text>
+            <Text style={styles.doneBtnText}>Save Changes</Text>
           )}
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.clearBtn} onPress={clearProfile}>
-          <Text style={styles.clearBtnText}>Clear history</Text>
+        <TouchableOpacity style={styles.clearBtn} onPress={handleLogout}>
+          <Text style={styles.clearBtnText}>Log Out</Text>
         </TouchableOpacity>
       </View>
-
     </View>
   );
 }
@@ -206,11 +204,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 60,
+    paddingTop: 28,
   },
   avatarSection: {
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 20,
   },
   avatarWrapper: {
     marginBottom: 12,
@@ -232,9 +230,9 @@ const styles = StyleSheet.create({
   },
   editBtn: {
     backgroundColor: "#000",
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 8,
+    borderRadius: 20,
   },
   editBtnText: {
     color: "#fff",
@@ -242,48 +240,49 @@ const styles = StyleSheet.create({
   },
   fieldSection: {
     marginBottom: 20,
+    gap: 8,
   },
+
   label: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "500",
-    marginBottom: 12,
-    marginTop: 24,
+    marginBottom: 8,
+    marginTop: 12,
   },
   input: {
-    backgroundColor: "#e8e8e8",
+    backgroundColor: "#ffffff",
     borderRadius: 10,
     padding: 14,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    height: 56,
+    height: 48,
+    borderWidth: 0.5,
+    borderColor: "grey",
   },
   colorRow: {
     flexDirection: "row",
     gap: 12,
-    marginTop: 8,
   },
   colorCircle: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    borderWidth: 1.5,
-    borderColor: "#999",
+    borderWidth: 0.5,
+    borderColor: "#grey",
   },
   colorCircleSelected: {
-    borderWidth: 2,
-    borderColor: "#999",
+    borderWidth: 1.5,
+    borderColor: "grey",
   },
-  buttonRow: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 50,
+  buttonColumn: {
+    gap: 8,
+    marginTop: 24,
+    alignItems: "center",
   },
   doneBtn: {
-    flex: 1,
     backgroundColor: "#000",
-    padding: 16,
-    borderRadius: 10,
+    width: 144,
+    paddingVertical: 14,
+    borderRadius: 30,
     alignItems: "center",
   },
   doneBtnText: {
@@ -292,14 +291,21 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   clearBtn: {
-    flex: 1,
-    backgroundColor: "#cc0000",
-    padding: 16,
-    borderRadius: 10,
+    backgroundColor: "white",
+    width: 144,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 30,
+    borderWidth: 0.5,
+    borderColor: "grey",
+    shadowColor: "#ccc",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
     alignItems: "center",
   },
   clearBtnText: {
-    color: "#fff",
+    color: "black",
     fontSize: 16,
     fontWeight: "500",
   },
