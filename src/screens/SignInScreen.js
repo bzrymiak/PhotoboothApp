@@ -40,7 +40,19 @@ export default function SignInScreen() {
       // the onAuthStateChanged listener in App.js will detect this and navigate.
     } catch (error) {
       console.log(error.message);
-      alert("You already have an account - Please sign in instead!");
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          alert("This email already has an account. Please sign in instead.");
+          break;
+        case "auth/invalid-email":
+          alert("Invalid email format.");
+          break;
+        case "auth/weak-password":
+          alert("Password should be at least 6 characters.");
+          break;
+        default:
+          alert("Sign up failed. Please try again.");
+      }
     }
   }
 
