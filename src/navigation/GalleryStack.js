@@ -19,7 +19,7 @@ export default function GalleryPhotoStack() {
       <Stack.Screen
         name="EditProfileScreen"
         component={EditProfileScreen}
-        options={{ title: "Edit Profile" }}
+        options={{ title: "Settings" }}
       />
     </Stack.Navigator>
   );

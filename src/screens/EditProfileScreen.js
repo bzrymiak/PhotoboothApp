@@ -12,6 +12,7 @@ import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { signOut } from "firebase/auth";
 import {
   firebase_db,
   firebase_storage,
@@ -52,6 +53,16 @@ export default function EditProfileScreen({ route, navigation }) {
   const [coverImage, setCoverImage] = useState(initialCover);
   const [saving, setSaving] = useState(false);
   const [bgColor, setBgColor] = useState("#ffffff");
+
+  const handleLogout = async () => {
+    try {
+      await signOut(firebase_auth);
+      // No need to manually navigate if you're using onAuthStateChanged in App.js
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Failed to log out.");
+    }
+  };
 
   // request photo permissions
   useEffect(() => {
@@ -112,26 +123,6 @@ export default function EditProfileScreen({ route, navigation }) {
       setSaving(false);
     }
   };
-
-  // clear profile images from Firestore and reset local state
-  // const clearProfile = async () => {
-  //   const uid = firebase_auth.currentUser?.uid;
-  //   if (!uid) return;
-
-  //   await setDoc(doc(firebase_db, "users", uid), {
-  //     profileImage: null,
-  //     coverImage: null,
-  //   });
-
-  //   // clear background colour from AsyncStorage
-  //   await AsyncStorage.removeItem("profileBgColor");
-
-  //   setName("");
-  //   setBio("");
-  //   setProfileImage(null);
-  //   setCoverImage(null);
-  //   setBgColor("#ffffff");
-  // };
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
@@ -196,13 +187,12 @@ export default function EditProfileScreen({ route, navigation }) {
           {saving ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.doneBtnText}>Done</Text>
+            <Text style={styles.doneBtnText}>Save Changes</Text>
           )}
         </TouchableOpacity>
-
-        {/* <TouchableOpacity style={styles.clearBtn} onPress={clearProfile}>
-          <Text style={styles.clearBtnText}>Clear history</Text>
-        </TouchableOpacity> */}
+        <TouchableOpacity style={styles.clearBtn} onPress={handleLogout}>
+          <Text style={styles.clearBtnText}>Log Out</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
