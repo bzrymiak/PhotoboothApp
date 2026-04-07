@@ -1,3 +1,5 @@
+// THIS IS AN OLD SCREEN IM TOO SCARED TO DELETE (GOT MERGED WITH GALLERY SCREEN)
+
 import { useState, useCallback } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";

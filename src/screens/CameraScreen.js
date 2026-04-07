@@ -119,43 +119,6 @@ export default function CameraScreen({ navigation }) {
     setPreviewPhoto(null);
   }
 
-  // preview screen --> only triggers after a photo is taken
-  // if (previewPhoto) {
-  //   if (counter == 0) {
-  //     setPreviewPhoto(null);
-  //     saveToApp();
-  //   }
-
-  //   return (
-  //     <View style={styles.previewContainer}>
-  //       <Image
-  //         source={{ uri: previewPhoto.uri }}
-  //         style={StyleSheet.absoluteFill}
-  //         resizeMode="cover"
-  //       />
-
-  //       <View style={styles.cropOverlay} pointerEvents="none">
-  //         <View style={styles.cropDimTop} />
-  //         <View style={styles.cropWindow} />
-  //         <View style={styles.cropDimBottom} />
-  //       </View>
-
-  //       {/* Bottom action buttons */}
-  //       {/* <View style={styles.counterContainer}>
-  //         <Text style={styles.counterText}>Preview ends in {counter}...</Text>
-  //       </View> */}
-
-  //       <View style={styles.previewActions}>
-  //         <View style={styles.photoButton}>
-  //           <Text style={styles.photoCounterText}>
-  //             Photos: {photos.length + 1} / 3
-  //           </Text>
-  //         </View>
-  //       </View>
-  //     </View>
-  //   );
-  // }
-
   // MAIN CAMERA RENDERING
   return (
     // only render the camera when the user is actively on this page
@@ -167,20 +130,29 @@ export default function CameraScreen({ navigation }) {
           ref={cameraRef}
           onCameraReady={() => setIsCameraReady(true)}
         />
-
-        {/* <View style={styles.counterContainer}>
-          <Text style={styles.counterText}>{counter}</Text>
-        </View> */}
+        {/* thumbnail photo preview */}
+        {photos.length > 0 && (
+          <TouchableOpacity
+            style={styles.thumbnailContainer}
+            onPress={() => {
+              // optional: you could open a preview screen here
+              console.log("last photo taken");
+            }}
+          >
+            <Image
+              source={{ uri: photos[photos.length - 1] }}
+              style={styles.thumbnail}
+            />
+          </TouchableOpacity>
+        )}
         <View style={styles.photoButton}>
           <Text style={styles.photoCounterText}>{photos.length + 1} / 3</Text>
         </View>
-
         <View style={styles.cropOverlay} pointerEvents="none">
           <View style={styles.cropDimTop} />
           <View style={styles.cropWindow} />
           <View style={styles.cropDimBottom} />
         </View>
-
         {/* Bottom controls */}
         <View style={styles.cameraOverlay}>
           <View style={styles.sideControl} />
@@ -221,10 +193,17 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
 
-  discardText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
+  thumbnailContainer: {
+    position: "absolute",
+    bottom: 62, // sits above the camera controls
+    left: 30,
+    zIndex: 20,
+  },
+
+  thumbnail: {
+    width: 80,
+    height: 60,
+    borderRadius: 10,
   },
 
   previewActions: {

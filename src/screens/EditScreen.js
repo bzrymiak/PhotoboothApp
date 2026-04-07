@@ -30,16 +30,16 @@ const PHOTO_WIDTH = PHOTO_HEIGHT / 1.4;
 const API_KEY = process.env.EXPO_PUBLIC_GOOGLE_FONTS_API_KEY;
 
 const FONT_NAMES = [
-  "Dancing Script",
-  "Pacifico",
-  "Caveat",
-  "Satisfy",
-  "Courgette",
+  "Instrument Serif",
+  "Bitcount Single",
+  "Chewy",
+  "JetBrains Mono",
+  "Anton",
   "Lobster",
   "Amatic SC",
-  "Indie Flower",
-  "Sacramento",
-  "Great Vibes",
+  "Shadows Into Light Two",
+  "Playpen Sans",
+  "DynaPuff",
 ];
 
 export default function EditScreen({ route, navigation }) {
@@ -51,6 +51,9 @@ export default function EditScreen({ route, navigation }) {
   const [selectedFont, setSelectedFont] = useState(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [bgColor, setBgColor] = useState("#ffffff");
+  const MAX_WIDTH = SCREEN_WIDTH - 40;
+  const [textWidth, setTextWidth] = useState(0);
+  const hiddenTextRef = useRef(null);
 
   useLayoutEffect(() => {
     navigation.setOptions({ headerBackTitle: "Back" });
@@ -175,7 +178,7 @@ export default function EditScreen({ route, navigation }) {
           placeholderTextColor="#aaa"
           value={caption}
           onChangeText={setCaption}
-          maxLength={24}
+          maxLength={20}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
         />
@@ -272,10 +275,11 @@ const styles = StyleSheet.create({
   },
 
   captionInput: {
-    fontSize: 24,
+    fontSize: 20,
     color: "black",
     textAlign: "center",
-    paddingBottom: 20,
+    paddingBottom: 28,
+    width: 212,
   },
 
   fontPicker: {

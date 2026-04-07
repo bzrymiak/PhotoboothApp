@@ -90,8 +90,21 @@ export default function GalleryScreen({ navigation }) {
 
   const ProfileHeader = () => (
     <View style={[styles.profileContainer, { backgroundColor: bgColor }]}>
+      <View style={styles.avatarWrapper}>
+        {profileImage ? (
+          <Image source={{ uri: profileImage }} style={styles.profileImage} />
+        ) : (
+          <View style={styles.profilePlaceholder} />
+        )}
+      </View>
+
+      <View>
+        <Text style={styles.name}>{name || "User Name"}</Text>
+        <Text style={styles.bioText}>{bio || "Bio"}</Text>
+      </View>
+
       <TouchableOpacity
-        style={styles.profileWrapper}
+        style={styles.editBtn}
         onPress={() =>
           navigation.navigate("EditProfileScreen", {
             name,
@@ -101,17 +114,8 @@ export default function GalleryScreen({ navigation }) {
           })
         }
       >
-        {profileImage ? (
-          <Image source={{ uri: profileImage }} style={styles.profileImage} />
-        ) : (
-          <View style={styles.profilePlaceholder} />
-        )}
+        <Text style={styles.editBtnText}>Edit</Text>
       </TouchableOpacity>
-
-      <View style={styles.info}>
-        <Text style={styles.name}>{name || "User Name"}</Text>
-        <Text style={styles.bioText}>{bio || "Bio"}</Text>
-      </View>
     </View>
   );
 
@@ -133,6 +137,7 @@ export default function GalleryScreen({ navigation }) {
         ListHeaderComponent={<ProfileHeader />}
         contentContainerStyle={styles.grid}
         columnWrapperStyle={styles.row}
+        //this is what will show if you have no photostrips yet
         ListEmptyComponent={
           <View style={styles.emptyInline}>
             <Text style={styles.emptyText}>
@@ -143,6 +148,7 @@ export default function GalleryScreen({ navigation }) {
             </Text>
           </View>
         }
+        //rendering the strips
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.stripWrapper}
@@ -168,7 +174,7 @@ const styles = StyleSheet.create({
 
   profileContainer: {
     alignItems: "center",
-    paddingTop: 32,
+    paddingTop: 80,
     paddingBottom: 24,
     marginBottom: 16,
     backgroundColor: "white",
@@ -176,13 +182,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.4,
     shadowRadius: 3,
+    gap: 8,
   },
-  editBtn: {
-    position: "absolute",
-    top: 70,
-    right: 10,
-    padding: 8,
-  },
+
   icon: {
     width: 28,
     height: 28,
@@ -202,6 +204,19 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: "#ffffff",
   },
+
+  editBtn: {
+    backgroundColor: "#000",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 8,
+  },
+  editBtnText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+
   info: {
     alignItems: "center",
     marginTop: 12,
