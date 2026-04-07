@@ -47,6 +47,35 @@ export default function EditProfileScreen({ route, navigation }) {
     coverImage: initialCover,
   } = route.params;
 
+  // const clearChanges = () => {
+  //   setName(initialName ?? "");
+  //   setBio(initialBio ?? "");
+  //   setBgColor("#ffffff");
+  // };
+
+  const clearChanges = async () => {
+    const uid = firebase_auth.currentUser?.uid;
+    if (!uid) return;
+
+    try {
+      await setDoc(doc(firebase_db, "users", uid), {
+        name: "",
+        bio: "",
+        profileImage: null,
+        coverImage: coverImage ?? null,
+      });
+
+      setName("");
+      setBio("");
+      setProfileImage(null);
+      await AsyncStorage.removeItem("profileBgColor");
+      setBgColor("#FFFFFF");
+    } catch (e) {
+      console.error("Failed to clear profile:", e);
+      alert("Something went wrong clearing your profile.");
+    }
+  };
+
   const [name, setName] = useState(initialName ?? "");
   const [bio, setBio] = useState(initialBio ?? "");
   const [profileImage, setProfileImage] = useState(initialProfile);
@@ -181,19 +210,24 @@ export default function EditProfileScreen({ route, navigation }) {
 
       {/* Done and Clear buttons */}
       <View style={styles.buttonColumn}>
-        <TouchableOpacity
-          style={styles.doneBtn}
-          onPress={saveProfile}
-          disabled={saving}
-        >
-          {saving ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.doneBtnText}>Save Changes</Text>
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.clearBtn} onPress={handleLogout}>
-          <Text style={styles.clearBtnText}>Log Out</Text>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.clearBtn} onPress={clearChanges}>
+            <Text style={styles.clearBtnText}>Clear</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.doneBtn}
+            onPress={saveProfile}
+            disabled={saving}
+          >
+            {saving ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.doneBtnText}>Save Changes</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity style={styles.logBtn} onPress={handleLogout}>
+          <Text style={styles.logBtnText}>Log Out</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -274,6 +308,12 @@ const styles = StyleSheet.create({
     marginTop: 24,
     alignItems: "center",
   },
+
+  buttonRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+
   doneBtn: {
     backgroundColor: "#000",
     width: 144,
@@ -301,6 +341,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   clearBtnText: {
+    color: "black",
+    fontSize: 16,
+    fontWeight: "500",
+  },
+
+  logBtn: {
+    backgroundColor: "#e5e5e5",
+    width: 296,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 30,
+    borderWidth: 0.5,
+    borderColor: "grey",
+    shadowColor: "#ccc",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    alignItems: "center",
+  },
+  logBtnText: {
     color: "black",
     fontSize: 16,
     fontWeight: "500",
