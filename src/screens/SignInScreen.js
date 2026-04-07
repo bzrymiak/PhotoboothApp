@@ -65,52 +65,57 @@ export default function SignInScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Sign Up or Log In</Text>
-
-      {/* Email Input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        keyboardType="email-address" // optimizes keyboard for email entry (@ symbol)
-        value={email}
-        onChangeText={setEmail} // updates state on every keystroke
-        autoCapitalize="none" // important! Prevents auto-capitalizing the first letter of emails
-      />
-
-      {/* Password Input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry={true} // hides text for security (dots/asterisks)
-        value={password}
-        onChangeText={setPassword}
-      />
-
-      {/* Action Buttons */}
-
-      <Pressable
-        onPress={handleSignIn}
-        style={({ pressed }) => [
-          { backgroundColor: pressed ? "#292929" : "#3B3B3B" },
-          styles.buttonContainer,
-        ]}
-      >
-        <Text style={styles.buttonText}>Sign In</Text>
-      </Pressable>
-
-      <View style={styles.line}>
-        <Text style={styles.smallText}>or</Text>
+      <View style={styles.title}>
+        <Text style={styles.header}>Let's Get Started</Text>
+        <Text style={styles.description}>Sign In or Sign Up!</Text>
       </View>
+      <View style={styles.userInfo}>
+        {/* Email Input */}
+        <View style={styles.infoSection}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            keyboardType="email-address" // optimizes keyboard for email entry (@ symbol)
+            value={email}
+            onChangeText={setEmail} // updates state on every keystroke
+            autoCapitalize="none" // important! Prevents auto-capitalizing the first letter of emails
+          />
+        </View>
+        {/* Password Input */}
+        <View style={styles.infoSection}>
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry={true} // hides text for security (dots/asterisks)
+            value={password}
+            onChangeText={setPassword}
+          />
+        </View>
 
-      <Pressable
-        onPress={handleSignUp}
-        style={({ pressed }) => [
-          { backgroundColor: pressed ? "#292929" : "#3B3B3B" },
-          styles.buttonContainer,
-        ]}
-      >
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </Pressable>
+        <View style={styles.buttonContainer}>
+          //sign in button
+          <Pressable
+            onPress={handleSignIn}
+            style={({ pressed }) => [
+              { backgroundColor: pressed ? "black" : "#202020" },
+              styles.signInContainer,
+            ]}
+          >
+            <Text style={styles.signInText}>Sign In</Text>
+          </Pressable>
+          <Pressable
+            onPress={handleSignUp}
+            style={({ pressed }) => [
+              { backgroundColor: pressed ? "#ccc" : "#ffffff" },
+              styles.signUpContainer,
+            ]}
+          >
+            <Text style={styles.signUpText}>Sign Up</Text>
+          </Pressable>
+        </View>
+      </View>
     </View>
   );
 }
@@ -118,71 +123,117 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    paddingTop: 140, // all content appears above the keyboard
+    padding: 32,
+    paddingTop: 130, // all content appears above the keyboard
     backgroundColor: "white",
+    gap: 48,
   },
+
+  title: {
+    gap: 4,
+  },
+
   header: {
     fontSize: 24,
-    marginBottom: 24,
-    textAlign: "left",
-    fontWeight: "bold",
+    textAlign: "center",
+    fontWeight: 600,
   },
+
+  description: {
+    fontSize: 14,
+    textAlign: "center",
+    fontWeight: 400,
+  },
+
+  userInfo: {
+    gap: 16,
+  },
+
+  infoSection: {
+    gap: 8,
+  },
+
+  label: {
+    fontSize: 14,
+    fontWeight: 500,
+  },
+
   input: {
     height: 40,
-    borderColor: "#ccc",
+    backgroundColor: "white",
+    borderRadius: 10,
     borderWidth: 1,
     marginBottom: 12,
-    paddingLeft: 16,
-    borderRadius: 8,
+    padding: 14,
+    fontSize: 16,
+    height: 48,
+    borderColor: "#ccc",
   },
-  buttonContainer: {
+  signInContainer: {
     padding: 16,
     margin: 10,
     marginBottom: 0,
     width: "100%",
     alignSelf: "center",
     textAlign: "center",
-    borderRadius: 8,
+    borderRadius: 30,
   },
-  buttonText: {
+  signInText: {
     textAlign: "center",
-    fontWeight: 700,
+    fontWeight: 500,
     fontSize: 16,
     color: "white",
   },
-  googleText: {
-    textAlign: "center",
-    justifyContent: "center",
-    fontWeight: 500,
-  },
-  footer: {
-    marginTop: 20,
-    textAlign: "center",
-    color: "#888",
-  },
-  line: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    marginTop: 50,
-    marginBottom: 10,
-    color: "#9A9A9A",
-  },
-  smallText: {
-    textAlign: "center",
+
+  signUpContainer: {
+    padding: 16,
+    margin: 10,
+    marginBottom: 0,
+    width: "100%",
     alignSelf: "center",
-    marginBottom: -8,
-    color: "#9A9A9A",
-    backgroundColor: "white",
-    width: 40,
+    textAlign: "center",
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
-  googleIcon: {
-    width: 28,
-    height: 28,
+  signUpText: {
+    textAlign: "center",
+    fontWeight: 500,
+    fontSize: 16,
+    color: "black",
   },
-  inlineButton: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
+
+  buttonContainer: {
+    gap: 0,
   },
+
+  // footer: {
+  //   marginTop: 20,
+  //   textAlign: "center",
+  //   color: "#888",
+  // },
+  // line: {
+  //   borderBottomWidth: StyleSheet.hairlineWidth,
+  //   marginTop: 50,
+  //   marginBottom: 10,
+  //   color: "#9A9A9A",
+  // },
+  // smallText: {
+  //   textAlign: "center",
+  //   alignSelf: "center",
+  //   marginBottom: -8,
+  //   color: "#9A9A9A",
+  //   backgroundColor: "white",
+  //   width: 40,
+  // },
+  // googleIcon: {
+  //   width: 28,
+  //   height: 28,
+  // },
+  // inlineButton: {
+  //   display: "flex",
+  //   flexDirection: "row",
+  //   alignItems: "center",
+  //   gap: 16,
+  // },
 });

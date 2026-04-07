@@ -12,13 +12,25 @@ import * as FileSystem from "expo-file-system/legacy";
 import { doc, deleteDoc } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
 import { firebase_db, firebase_storage } from "../firebaseConfig";
+import { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const STRIP_WIDTH = SCREEN_WIDTH * 0.75;
 const STRIP_HEIGHT = STRIP_WIDTH * 1.8;
 
 export default function ShareScreen({ route, navigation }) {
+  const [bgColor, setBgColor] = useState("#ffffff");
   const { strip } = route.params;
+
+  useEffect(() => {
+    const loadColor = async () => {
+      const storedColor = await AsyncStorage.getItem("profileBgColor");
+      if (storedColor) setBgColor(storedColor);
+    };
+
+    loadColor();
+  }, []);
 
   const handleShare = async () => {
     try {
@@ -75,7 +87,7 @@ export default function ShareScreen({ route, navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: bgColor }]}>
       <Image
         source={{ uri: strip.url }}
         style={styles.stripImage}
@@ -115,33 +127,38 @@ const styles = StyleSheet.create({
 
   buttonRow: {
     flexDirection: "row",
-    gap: 8,
+    gap: 12,
   },
 
   shareButton: {
     backgroundColor: "black",
-    paddingVertical: 16,
-    paddingHorizontal: 32,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
     borderRadius: 30,
   },
 
   shareButtonText: {
     color: "white",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "500",
   },
 
   deleteButton: {
-    paddingVertical: 16,
-    paddingHorizontal: 32,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    backgroundColor: "white",
     borderRadius: 30,
-    borderWidth: 1,
-    borderColor: "black",
+    borderWidth: 0.5,
+    borderColor: "#ccc",
+    shadowColor: "#ccc",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
   },
 
   deleteButtonText: {
     color: "black",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "500",
   },
 });

@@ -62,14 +62,6 @@ export default function GalleryScreen({ navigation }) {
     if (storedColor) setBgColor(storedColor);
   }
 
-  // Fetch this user's photostrips from Firestore whenever screen is focused
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener("focus", () => {
-  //     fetchStrips();
-  //   });
-  //   return unsubscribe;
-  // }, [navigation]);
-
   async function fetchStrips() {
     setLoading(true);
     try {
@@ -97,7 +89,7 @@ export default function GalleryScreen({ navigation }) {
   }
 
   const ProfileHeader = () => (
-    <View style={styles.profileContainer}>
+    <View style={[styles.profileContainer, { backgroundColor: bgColor }]}>
       <TouchableOpacity
         style={styles.profileWrapper}
         onPress={() =>
@@ -115,14 +107,6 @@ export default function GalleryScreen({ navigation }) {
           <View style={styles.profilePlaceholder} />
         )}
       </TouchableOpacity>
-
-      {/* <View style={styles.profileWrapper}>
-        {profileImage ? (
-          <Image source={{ uri: profileImage }} style={styles.profileImage} />
-        ) : (
-          <View style={styles.profilePlaceholder} />
-        )} */}
-      {/* </View> */}
 
       <View style={styles.info}>
         <Text style={styles.name}>{name || "User Name"}</Text>
@@ -150,7 +134,7 @@ export default function GalleryScreen({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: bgColor }]}>
       <FlatList
         data={strips}
         keyExtractor={(item) => item.id}
@@ -185,8 +169,6 @@ export default function GalleryScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "#550d32",
-    backgroundColor: "white",
   },
 
   profileContainer: {
@@ -275,7 +257,7 @@ const styles = StyleSheet.create({
   stripWrapper: {
     width: STRIP_WIDTH,
     height: STRIP_HEIGHT,
-    shadowColor: "#ccc",
+    shadowColor: "grey",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.4,
     shadowRadius: 3,

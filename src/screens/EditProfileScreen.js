@@ -141,22 +141,24 @@ export default function EditProfileScreen({ route, navigation }) {
 
       {/* Name input */}
       <View style={styles.fieldSection}>
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={setName}
-          placeholder="Enter your user name"
-        />
-      </View>
-
-      {/* Bio input */}
-      <View style={styles.fieldSection}>
-        <TextInput
-          style={styles.input}
-          value={bio}
-          onChangeText={setBio}
-          placeholder="Enter your bio"
-        />
+        <View>
+          <Text style={styles.label}>Nickname</Text>
+          <TextInput
+            style={styles.input}
+            value={name}
+            onChangeText={setName}
+            placeholder="give yourself a nickname!"
+          />
+        </View>
+        <View>
+          <Text style={styles.label}>Bio</Text>
+          <TextInput
+            style={styles.input}
+            value={bio}
+            onChangeText={setBio}
+            placeholder="write a short bio"
+          />
+        </View>
       </View>
 
       {/* Background colour picker */}
@@ -178,7 +180,7 @@ export default function EditProfileScreen({ route, navigation }) {
       </View>
 
       {/* Done and Clear buttons */}
-      <View style={styles.buttonRow}>
+      <View style={styles.buttonColumn}>
         <TouchableOpacity
           style={styles.doneBtn}
           onPress={saveProfile}
@@ -228,9 +230,9 @@ const styles = StyleSheet.create({
   },
   editBtn: {
     backgroundColor: "#000",
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 8,
+    borderRadius: 20,
   },
   editBtnText: {
     color: "#fff",
@@ -238,48 +240,49 @@ const styles = StyleSheet.create({
   },
   fieldSection: {
     marginBottom: 20,
+    gap: 8,
   },
+
   label: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "500",
-    marginBottom: 12,
-    marginTop: 24,
+    marginBottom: 8,
+    marginTop: 12,
   },
   input: {
-    backgroundColor: "#e8e8e8",
+    backgroundColor: "#ffffff",
     borderRadius: 10,
     padding: 14,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    height: 56,
+    height: 48,
+    borderWidth: 0.5,
+    borderColor: "grey",
   },
   colorRow: {
     flexDirection: "row",
     gap: 12,
-    marginTop: 8,
   },
   colorCircle: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    borderWidth: 1.5,
-    borderColor: "#999",
+    borderWidth: 0.5,
+    borderColor: "#grey",
   },
   colorCircleSelected: {
-    borderWidth: 2,
-    borderColor: "#999",
+    borderWidth: 1.5,
+    borderColor: "grey",
   },
-  buttonRow: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 50,
+  buttonColumn: {
+    gap: 8,
+    marginTop: 10,
+    alignItems: "center",
   },
   doneBtn: {
-    flex: 1,
     backgroundColor: "#000",
-    padding: 16,
-    borderRadius: 10,
+    width: 144,
+    paddingVertical: 14,
+    borderRadius: 30,
     alignItems: "center",
   },
   doneBtnText: {
@@ -288,14 +291,21 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   clearBtn: {
-    flex: 1,
-    backgroundColor: "#cc0000",
-    padding: 16,
-    borderRadius: 10,
+    backgroundColor: "white",
+    width: 144,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 30,
+    borderWidth: 0.5,
+    borderColor: "grey",
+    shadowColor: "#ccc",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
     alignItems: "center",
   },
   clearBtnText: {
-    color: "#fff",
+    color: "black",
     fontSize: 16,
     fontWeight: "500",
   },

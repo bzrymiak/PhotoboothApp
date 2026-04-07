@@ -9,7 +9,13 @@ import {
 } from "react-native";
 // import { usePhotos, addPhoto } from "../context/PhotoContext";
 import { captureRef } from "react-native-view-shot";
-import { useRef, useState, useLayoutEffect } from "react";
+import {
+  useRef,
+  useState,
+  useLayoutEffect,
+  useEffect,
+  useCallback,
+} from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import {
@@ -19,6 +25,8 @@ import {
 } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { useFonts, AmaticSC_700Bold } from "@expo-google-fonts/amatic-sc"; //font for captions
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 
 const NUM_COLUMNS = 1;
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -44,6 +52,8 @@ export default function PhotostripScreen({ route, navigation }) {
   const [fontsLoaded] = useFonts({
     AmaticSC_700Bold,
   });
+  //set bg colour
+  const [bgColor, setBgColor] = useState("#ffffff");
 
   // make the back button named "back" instead of the previous screen's name
   useLayoutEffect(() => {
@@ -51,6 +61,17 @@ export default function PhotostripScreen({ route, navigation }) {
       headerBackTitle: "Back",
     });
   }, [navigation]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadColor = async () => {
+        const storedColor = await AsyncStorage.getItem("profileBgColor");
+        if (storedColor) setBgColor(storedColor);
+      };
+
+      loadColor();
+    }, []),
+  );
 
   const snapshot = async () => {
     if (saving || saved) return;
@@ -102,7 +123,7 @@ export default function PhotostripScreen({ route, navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: bgColor }]}>
       {/* Photostrip - standalone, this is what gets snapshotted */}
       <View
         ref={snapshotRef}
@@ -169,7 +190,7 @@ export default function PhotostripScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    // backgroundColor: "white",
     alignItems: "center",
     paddingTop: 24,
   },
@@ -198,12 +219,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 2,
     borderWidth: 0.5,
-    borderColor: "#ccc",
+    borderColor: "#grey",
   },
 
   colorDotSelected: {
-    borderWidth: 1.5,
-    borderColor: "#ccc",
+    borderWidth: 1,
+    borderColor: "#grey",
   },
 
   stripContainer: {
@@ -244,7 +265,7 @@ const styles = StyleSheet.create({
 
   actionButton: {
     backgroundColor: "black",
-    paddingVertical: 16,
+    paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 30,
     alignItems: "center",
@@ -252,7 +273,7 @@ const styles = StyleSheet.create({
 
   actionButtonText: {
     color: "white",
-    fontWeight: 600,
+    fontWeight: 500,
     fontSize: 16,
   },
 
