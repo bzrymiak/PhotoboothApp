@@ -9,14 +9,15 @@
     "newArchEnabled": true,
     "scheme": "Photo",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/Snappy.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "plugins": [
       "@react-native-google-signin/google-signin",
       "expo-web-browser",
-      "@react-native-firebase/auth"
+      "@react-native-firebase/auth",
+      "expo-splash-screen"
     ],
     "ios": {
       "supportsTablet": true,
