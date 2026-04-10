@@ -15,19 +15,14 @@ import {
 import { firebase_auth } from "../firebaseConfig";
 
 export default function SignInScreen() {
-  // track email and password inputs.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // get the auth instance initialized in firebaseConfig.js
   const auth = firebase_auth;
 
-  // 1 .STANDARD EMAIL SIGN-IN
-  // handle User Registration
+  // send request to Firebase to create a user.
   async function handleSignUp() {
     try {
-      // send request to Firebase to create a user.
-      // 'await' pauses execution here until Firebase responds.
       const response = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -56,14 +51,12 @@ export default function SignInScreen() {
     }
   }
 
-  // handle User Login
-  // checks credentials against existing users in Firebase
+  // handle User Login and checks credentials against existing users in Firebase
   async function handleSignIn() {
     try {
       // send request to Firebase to validate credentials.
       const response = await signInWithEmailAndPassword(auth, email, password);
 
-      //console.log(response);
       alert("User: " + email + " signed in");
       // note: Similar to sign up, a success here triggers App.js to switch screens automatically.
     } catch (error) {

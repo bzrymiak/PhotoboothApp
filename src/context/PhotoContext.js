@@ -1,5 +1,4 @@
 //HOLD PHOTOS ARRAY AND MANAGE PHOTO ADDING/DELETING FUNCTIONS
-// can edit, this is just taken from class
 
 import { createContext, useContext, useState } from "react";
 
@@ -7,7 +6,6 @@ const PhotoContext = createContext();
 
 export function PhotoProvider({ children }) {
   const [photos, setPhotos] = useState([]);
-  // const [strips, setStrips] = useState([]);
 
   const addPhoto = (uri) => {
     setPhotos((prev) => [uri, ...prev]);
@@ -24,7 +22,6 @@ export function PhotoProvider({ children }) {
   );
 }
 
-// custom hook for easy access
 export function usePhotos() {
   return useContext(PhotoContext);
 }

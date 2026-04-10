@@ -39,7 +39,6 @@ async function uploadImage(uri, path) {
 }
 
 export default function EditProfileScreen({ route, navigation }) {
-  // receive current profile data form the profile screen
   const {
     name: initialName,
     bio: initialBio,
@@ -47,31 +46,17 @@ export default function EditProfileScreen({ route, navigation }) {
     coverImage: initialCover,
   } = route.params;
 
-  // const clearChanges = () => {
-  //   setName(initialName ?? "");
-  //   setBio(initialBio ?? "");
-  //   setBgColor("#ffffff");
-  // };
-
   const clearChanges = async () => {
     const uid = firebase_auth.currentUser?.uid;
     if (!uid) return;
-
     try {
-      await setDoc(doc(firebase_db, "users", uid), {
-        name: "",
-        bio: "",
-        profileImage: null,
-        coverImage: coverImage ?? null,
-      });
-
       setName("");
       setBio("");
       setProfileImage(null);
-      await AsyncStorage.removeItem("profileBgColor");
       setBgColor("#FFFFFF");
+      await AsyncStorage.removeItem("profileBgColor");
+      setCleared(true);
     } catch (e) {
-      console.error("Failed to clear profile:", e);
       alert("Something went wrong clearing your profile.");
     }
   };
@@ -82,11 +67,11 @@ export default function EditProfileScreen({ route, navigation }) {
   const [coverImage, setCoverImage] = useState(initialCover);
   const [saving, setSaving] = useState(false);
   const [bgColor, setBgColor] = useState("#ffffff");
+  const [cleared, setCleared] = useState(false);
 
   const handleLogout = async () => {
     try {
       await signOut(firebase_auth);
-      // No need to manually navigate if you're using onAuthStateChanged in App.js
     } catch (error) {
       console.error("Logout error:", error);
       alert("Failed to log out.");
@@ -138,7 +123,6 @@ export default function EditProfileScreen({ route, navigation }) {
         name,
         bio,
         profileImage: profileImageUrl ?? null,
-        coverImage: coverImage ?? null,
       });
 
       // save background colour locally
