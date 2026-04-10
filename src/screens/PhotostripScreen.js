@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
-// import { usePhotos, addPhoto } from "../context/PhotoContext";
 import { captureRef } from "react-native-view-shot";
 import {
   useRef,
@@ -96,7 +95,6 @@ export default function PhotostripScreen({ route, navigation }) {
   };
 
   async function saveToFirebase(photoPath) {
-    // Wait for auth state to be ready
     const uid = await new Promise((resolve, reject) => {
       const unsubscribe = onAuthStateChanged(firebase_auth, (user) => {
         unsubscribe();
@@ -124,7 +122,6 @@ export default function PhotostripScreen({ route, navigation }) {
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
-      {/* Photostrip - standalone, this is what gets snapshotted */}
       <View
         ref={snapshotRef}
         collapsable={false}
@@ -156,7 +153,6 @@ export default function PhotostripScreen({ route, navigation }) {
         </Text>
       </View>
 
-      {/* Colour picker dots - absolutely positioned to the left of the strip */}
       <View style={styles.colorPicker}>
         {STRIP_COLORS.map((color) => (
           <TouchableOpacity
@@ -190,7 +186,6 @@ export default function PhotostripScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "white",
     alignItems: "center",
     paddingTop: 24,
   },

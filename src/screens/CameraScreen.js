@@ -11,7 +11,6 @@ import {
   Dimensions,
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
-// import { usePhotos } from "../context/PhotoContext";
 
 const CROP_HEIGHT = 300;
 
@@ -23,7 +22,7 @@ export default function CameraScreen({ navigation }) {
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [previewPhoto, setPreviewPhoto] = useState(null); // Holds the taken photo
   const [photos, setPhotos] = useState([]); // holds up to 3 base64 images locally
-  const [counter, setCounter] = useState(3); // photo preview timer
+  const [counter, setCounter] = useState(3);
 
   const cameraRef = useRef(null);
   const isFocused = useIsFocused(); // check if user is on the page
@@ -37,7 +36,7 @@ export default function CameraScreen({ navigation }) {
     }
   }, [photos]);
 
-  // timer function for the photo preview
+  //timer function for the photo preview
   function timer() {
     setCounter(3);
     const id = setInterval(() => {
@@ -51,7 +50,7 @@ export default function CameraScreen({ navigation }) {
     }, 1000);
   }
 
-  // make sure camera permission is granted
+  // ask for camera permission
   if (!permission || !permission.granted) {
     return (
       <View style={styles.screenContainer}>
@@ -63,23 +62,11 @@ export default function CameraScreen({ navigation }) {
     );
   }
 
+  //toggle camera
   const toggleCamera = () =>
     setFacing((current) => (current === "back" ? "front" : "back"));
 
-  // Take a picture and show preview
-  // async function takePicture() {
-  //   if (cameraRef.current && isCameraReady) {
-  //     try {
-  //       const photo = await cameraRef.current.takePictureAsync({
-  //         base64: true,
-  //         quality: 0.5,
-  //       });
-  //       setPreviewPhoto(photo); // Show preview screen
-  //     } catch (error) {
-  //       console.log("Capture error: ", error);
-  //     }
-  //   }
-  // }
+  //take photo
   async function takePicture() {
     if (cameraRef.current && isCameraReady) {
       try {
@@ -111,11 +98,6 @@ export default function CameraScreen({ navigation }) {
       }
     }
     await MediaLibrary.saveToLibraryAsync(previewPhoto.uri);
-    setPreviewPhoto(null);
-  }
-
-  // Discard photo and go back to camera
-  function discardPhoto() {
     setPreviewPhoto(null);
   }
 

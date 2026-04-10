@@ -7,8 +7,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import CameraEditStack from "../navigation/CameraStack";
 import GalleryPhotoStack from "../navigation/GalleryStack";
 
-// import profile screens directly
-import ProfileScreen from "../screens/ProfileScreen";
 import EditProfileScreen from "../screens/EditProfileScreen";
 
 // import icons

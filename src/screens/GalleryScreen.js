@@ -52,14 +52,14 @@ export default function GalleryScreen({ navigation }) {
     const snap = await getDoc(doc(firebase_db, "users", uid));
     if (snap.exists()) {
       const data = snap.data();
-      if (data.name) setName(data.name);
-      if (data.bio) setBio(data.bio);
-      if (data.profileImage) setProfileImage(data.profileImage);
-      if (data.coverImage) setCoverImage(data.coverImage);
+      setName(data.name ?? "");
+      setBio(data.bio ?? "");
+      setProfileImage(data.profileImage ?? null);
+      setCoverImage(data.coverImage ?? null);
     }
 
     const storedColor = await AsyncStorage.getItem("profileBgColor");
-    if (storedColor) setBgColor(storedColor);
+    setBgColor(storedColor ?? "#ffffff");
   }
 
   async function fetchStrips() {
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     width: 110,
     height: 110,
     borderRadius: 100,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#ccc",
   },
 
   editBtn: {

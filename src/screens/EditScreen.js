@@ -87,6 +87,7 @@ export default function EditScreen({ route, navigation }) {
     };
   }, []);
 
+  //grab fonts from google fonts api
   async function fetchFonts() {
     try {
       const response = await fetch(
@@ -110,6 +111,7 @@ export default function EditScreen({ route, navigation }) {
     }
   }
 
+  //load the fonts we chose
   async function loadFont(fontData) {
     const fontFamily = fontData.family;
     if (loadedFonts[fontFamily]) return;
@@ -120,7 +122,7 @@ export default function EditScreen({ route, navigation }) {
         fontData.files?.["400"] ||
         Object.values(fontData.files)[0];
 
-      const secureUrl = url.replace("http://", "https://");
+      const secureUrl = url.replace("http://", "https://"); //convert to https
       await Font.loadAsync({ [fontFamily]: { uri: secureUrl } });
       setLoadedFonts((prev) => ({ ...prev, [fontFamily]: true }));
     } catch (error) {

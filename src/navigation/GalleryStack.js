@@ -1,4 +1,4 @@
-// HANDLES GALLERY STACK NAVIGATION
+// HANDLES GALLERY --> SETTINGS STACK NAVIGATION
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import GalleryScreen from "../screens/GalleryScreen";
