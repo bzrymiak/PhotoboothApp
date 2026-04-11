@@ -76,6 +76,7 @@ export default function PhotostripScreen({ route, navigation }) {
     if (saving || saved) return;
     setSaving(true);
     try {
+      // take native view and renderes as a png
       const result = await captureRef(snapshotRef, {
         result: "tmpfile",
         format: "png",

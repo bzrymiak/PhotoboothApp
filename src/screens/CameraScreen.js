@@ -90,6 +90,7 @@ export default function CameraScreen({ navigation }) {
             />
           </TouchableOpacity>
         )}
+        {/* photo counter */}
         <View style={styles.photoButton}>
           <Text style={styles.photoCounterText}>{photos.length + 1} / 3</Text>
         </View>
@@ -98,7 +99,7 @@ export default function CameraScreen({ navigation }) {
           <View style={styles.cropWindow} />
           <View style={styles.cropDimBottom} />
         </View>
-        {/* Bottom controls */}
+        {/* camera button and flip camera button */}
         <View style={styles.cameraOverlay}>
           <View style={styles.sideControl} />
 
