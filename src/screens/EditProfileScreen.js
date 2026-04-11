@@ -54,7 +54,6 @@ export default function EditProfileScreen({ route, navigation }) {
       setProfileImage(null);
       setBgColor("#FFFFFF");
       await AsyncStorage.removeItem("profileBgColor");
-      setCleared(true);
     } catch (e) {
       alert("Something went wrong clearing your profile.");
     }
@@ -65,7 +64,6 @@ export default function EditProfileScreen({ route, navigation }) {
   const [profileImage, setProfileImage] = useState(initialProfile);
   const [saving, setSaving] = useState(false);
   const [bgColor, setBgColor] = useState("#ffffff");
-  const [cleared, setCleared] = useState(false);
 
   const handleLogout = async () => {
     try {
