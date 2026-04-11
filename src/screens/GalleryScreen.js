@@ -182,10 +182,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
 
-  // profileWrapper: {
-  //   marginTop: 50,
-  //   borderRadius: 100,
-  // },
   profileImage: {
     width: 120,
     height: 120,
@@ -210,11 +206,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  // info: {
-  //   alignItems: "center",
-  //   marginTop: 12,
-  //   paddingHorizontal: 20,
-  // },
   name: {
     fontSize: 24,
     fontWeight: "500",
@@ -227,13 +218,6 @@ const styles = StyleSheet.create({
     color: "#555",
     textAlign: "center",
   },
-  // sectionLabel: {
-  //   alignSelf: "flex-start",
-  //   marginTop: 28,
-  //   marginLeft: 16,
-  //   fontSize: 18,
-  //   fontWeight: "700",
-  // },
 
   emptyInline: {
     marginTop: 40,

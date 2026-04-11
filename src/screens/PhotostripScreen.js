@@ -8,13 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import { captureRef } from "react-native-view-shot";
-import {
-  useRef,
-  useState,
-  useLayoutEffect,
-  useEffect,
-  useCallback,
-} from "react";
+import { useRef, useState, useLayoutEffect, useCallback } from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import {
@@ -23,7 +17,6 @@ import {
   firebase_db,
 } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
-import { useFonts, AmaticSC_700Bold } from "@expo-google-fonts/amatic-sc"; //font for captions
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -48,9 +41,6 @@ export default function PhotostripScreen({ route, navigation }) {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [stripColor, setStripColor] = useState("#FFFFF"); //default strip is white
-  const [fontsLoaded] = useFonts({
-    AmaticSC_700Bold,
-  });
   //set bg colour
   const [bgColor, setBgColor] = useState("#ffffff");
 
@@ -171,7 +161,7 @@ export default function PhotostripScreen({ route, navigation }) {
       {/* Save button */}
       <View style={styles.previewActions}>
         <TouchableOpacity
-          style={[styles.actionButton, styles.localButton]}
+          style={styles.actionButton}
           onPress={snapshot}
           disabled={saving || saved}
         >
@@ -189,12 +179,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     paddingTop: 24,
-  },
-
-  stripWrapper: {
-    position: "relative",
-    alignItems: "center",
-    marginBottom: 100,
   },
 
   //color picker styling
@@ -241,11 +225,6 @@ const styles = StyleSheet.create({
     margin: 6,
   },
 
-  photo: {
-    width: "100%",
-    height: "100%",
-  },
-
   captionText: {
     fontFamily: "AmaticSC_700Bold",
     fontSize: 20,
@@ -274,22 +253,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  localButton: {
-    backgroundColor: "black",
-  },
-
-  cameraOverlay: {
-    position: "absolute",
-    bottom: 0,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: SCREEN_WIDTH,
-    paddingHorizontal: 30,
-    paddingBottom: 30,
-    zIndex: 10,
-  },
-
   previewActions: {
     position: "absolute",
     bottom: 24,
@@ -298,12 +261,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 24,
     paddingHorizontal: 30,
-  },
-
-  snapshotImg: {
-    width: PHOTO_WIDTH,
-    height: PHOTO_HEIGHT * 3,
-    position: "absolute",
-    zIndex: 1,
   },
 });

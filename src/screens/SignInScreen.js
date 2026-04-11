@@ -1,9 +1,8 @@
 import {
   createUserWithEmailAndPassword,
-  signInWithCredential,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -177,7 +176,6 @@ const styles = StyleSheet.create({
   },
 
   input: {
-    height: 40,
     backgroundColor: "white",
     borderRadius: 10,
     borderWidth: 1,
