@@ -8,7 +8,6 @@ import {
   Button,
   TouchableOpacity,
   View,
-  Dimensions,
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 
@@ -20,9 +19,7 @@ export default function CameraScreen({ navigation }) {
   const [mediaPermission, requestMediaPermission] =
     MediaLibrary.usePermissions();
   const [isCameraReady, setIsCameraReady] = useState(false);
-  const [previewPhoto, setPreviewPhoto] = useState(null); // Holds the taken photo
   const [photos, setPhotos] = useState([]); // holds up to 3 base64 images locally
-  const [counter, setCounter] = useState(3);
 
   const cameraRef = useRef(null);
   const isFocused = useIsFocused(); // check if user is on the page
@@ -35,20 +32,6 @@ export default function CameraScreen({ navigation }) {
       navigation.navigate("Add a Caption", { photos: snapshot });
     }
   }, [photos]);
-
-  //timer function for the photo preview
-  function timer() {
-    setCounter(3);
-    const id = setInterval(() => {
-      setCounter((prev) => {
-        if (prev <= 1) {
-          clearInterval(id);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }
 
   // ask for camera permission
   if (!permission || !permission.granted) {
@@ -82,25 +65,6 @@ export default function CameraScreen({ navigation }) {
     }
   }
 
-  function saveToApp() {
-    const base64Image = `data:image/jpg;base64,${previewPhoto.base64}`;
-    const updatedPhotos = [...photos, base64Image];
-    setPhotos(updatedPhotos);
-  }
-
-  // Save to device camera roll
-  async function saveLocally() {
-    if (!mediaPermission?.granted) {
-      const { granted } = await requestMediaPermission();
-      if (!granted) {
-        console.log("Media library permission not granted");
-        return;
-      }
-    }
-    await MediaLibrary.saveToLibraryAsync(previewPhoto.uri);
-    setPreviewPhoto(null);
-  }
-
   // MAIN CAMERA RENDERING
   return (
     // only render the camera when the user is actively on this page
@@ -117,7 +81,6 @@ export default function CameraScreen({ navigation }) {
           <TouchableOpacity
             style={styles.thumbnailContainer}
             onPress={() => {
-              // optional: you could open a preview screen here
               console.log("last photo taken");
             }}
           >
@@ -127,6 +90,7 @@ export default function CameraScreen({ navigation }) {
             />
           </TouchableOpacity>
         )}
+        {/* photo counter */}
         <View style={styles.photoButton}>
           <Text style={styles.photoCounterText}>{photos.length + 1} / 3</Text>
         </View>
@@ -135,7 +99,7 @@ export default function CameraScreen({ navigation }) {
           <View style={styles.cropWindow} />
           <View style={styles.cropDimBottom} />
         </View>
-        {/* Bottom controls */}
+        {/* camera button and flip camera button */}
         <View style={styles.cameraOverlay}>
           <View style={styles.sideControl} />
 
@@ -143,7 +107,6 @@ export default function CameraScreen({ navigation }) {
             style={[styles.snapButton, !isCameraReady && { opacity: 0.5 }]}
             onPress={() => {
               takePicture();
-              timer(); // trigger the timer so the photo preview only shows for a few seconds
             }}
             disabled={!isCameraReady}
           />
@@ -231,21 +194,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "500",
     color: "white",
-  },
-
-  counterContainer: {
-    position: "absolute",
-    top: 16, // ← adjust to sit below the status bar
-    right: 180,
-    width: "100%",
-    alignItems: "center",
-    zIndex: 20,
-  },
-
-  counterText: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: 400,
   },
 
   // ── Camera styles ──

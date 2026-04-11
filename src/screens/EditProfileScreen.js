@@ -43,7 +43,6 @@ export default function EditProfileScreen({ route, navigation }) {
     name: initialName,
     bio: initialBio,
     profileImage: initialProfile,
-    coverImage: initialCover,
   } = route.params;
 
   const clearChanges = async () => {
@@ -55,7 +54,6 @@ export default function EditProfileScreen({ route, navigation }) {
       setProfileImage(null);
       setBgColor("#FFFFFF");
       await AsyncStorage.removeItem("profileBgColor");
-      setCleared(true);
     } catch (e) {
       alert("Something went wrong clearing your profile.");
     }
@@ -64,10 +62,8 @@ export default function EditProfileScreen({ route, navigation }) {
   const [name, setName] = useState(initialName ?? "");
   const [bio, setBio] = useState(initialBio ?? "");
   const [profileImage, setProfileImage] = useState(initialProfile);
-  const [coverImage, setCoverImage] = useState(initialCover);
   const [saving, setSaving] = useState(false);
   const [bgColor, setBgColor] = useState("#ffffff");
-  const [cleared, setCleared] = useState(false);
 
   const handleLogout = async () => {
     try {

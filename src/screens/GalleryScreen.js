@@ -35,7 +35,6 @@ export default function GalleryScreen({ navigation }) {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [profileImage, setProfileImage] = useState(null);
-  const [coverImage, setCoverImage] = useState(null);
   const [bgColor, setBgColor] = useState("#ffffff");
 
   useFocusEffect(
@@ -55,7 +54,6 @@ export default function GalleryScreen({ navigation }) {
       setName(data.name ?? "");
       setBio(data.bio ?? "");
       setProfileImage(data.profileImage ?? null);
-      setCoverImage(data.coverImage ?? null);
     }
 
     const storedColor = await AsyncStorage.getItem("profileBgColor");
@@ -90,7 +88,7 @@ export default function GalleryScreen({ navigation }) {
 
   const ProfileHeader = () => (
     <View style={[styles.profileContainer, { backgroundColor: bgColor }]}>
-      <View style={styles.avatarWrapper}>
+      <View>
         {profileImage ? (
           <Image source={{ uri: profileImage }} style={styles.profileImage} />
         ) : (
@@ -110,7 +108,6 @@ export default function GalleryScreen({ navigation }) {
             name,
             bio,
             profileImage,
-            coverImage,
           })
         }
       >
@@ -185,14 +182,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
 
-  icon: {
-    width: 28,
-    height: 28,
-  },
-  profileWrapper: {
-    marginTop: 50,
-    borderRadius: 100,
-  },
   profileImage: {
     width: 120,
     height: 120,
@@ -217,11 +206,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  info: {
-    alignItems: "center",
-    marginTop: 12,
-    paddingHorizontal: 20,
-  },
   name: {
     fontSize: 24,
     fontWeight: "500",
@@ -233,13 +217,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: "#555",
     textAlign: "center",
-  },
-  sectionLabel: {
-    alignSelf: "flex-start",
-    marginTop: 28,
-    marginLeft: 16,
-    fontSize: 18,
-    fontWeight: "700",
   },
 
   emptyInline: {

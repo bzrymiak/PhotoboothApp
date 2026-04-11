@@ -51,8 +51,6 @@ export default function EditScreen({ route, navigation }) {
   const [selectedFont, setSelectedFont] = useState(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [bgColor, setBgColor] = useState("#ffffff");
-  const MAX_WIDTH = SCREEN_WIDTH - 40;
-  const [textWidth, setTextWidth] = useState(0);
   const hiddenTextRef = useRef(null);
 
   useLayoutEffect(() => {
@@ -303,7 +301,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "white",
   },
 
   fontOptionSelected: {
